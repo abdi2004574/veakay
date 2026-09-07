@@ -22,7 +22,7 @@ Built by reading, in full: the TRD (688 lines), the section-by-section gap log (
 | 8 | Friends & Group Trips (remainder) | ✅ done |
 | 9 | Agency Dashboard & Business Tools | ✅ Packages & Trip Requests sub-scopes built (backend + mobile) · ⬜ remaining sub-scopes not started |
 | 10 | Notifications (Traveler + Agency) | ⬜ not started |
-| 11 | Admin / Super Admin Panel | ⬜ not started · 🚧 heavily blocked, needs scoping pass |
+| 11 | Admin / Super Admin Panel | 🔜 building now — agency approve/reject shipped · remaining admin surfaces unscoped |
 
 ---
 
@@ -348,7 +348,7 @@ Two forks resolved before this plan: (1) build **Friends** (symmetric request/ac
 |---|---|
 | `POST /storage/upload-url` (validates content-type/size per purpose via `MEDIA_PURPOSE_RULES`) | ✅ |
 | `POST /storage/confirm` (verifies the object actually exists in MinIO + size, ownership-checked) | ✅ |
-| `GET /storage/:mediaId/view-url` (public for post/story media; ownership-gated for `agency_document`) | ✅ |
+| `GET /storage/:mediaId/view-url` (purpose-based access control matrix: private campaigns, friends-only posts/stories, profile privacy, agency approval, chat participant checks; requires `entityType`+`entityId` query params) | ✅ |
 | `PostsService`/`StoriesService` batch-resolve `imageUrl` via `MediaAssetsService.resolveViewUrls` | ✅ |
 
 **Backend — endpoints** (all `@RequireRole(traveler)` except `GET /me`/`GET /users/:id/profile`/`GET /users/search`)
@@ -383,6 +383,7 @@ Two forks resolved before this plan: (1) build **Friends** (symmetric request/ac
 | unit: `MediaAssetsService` — upload-url validation, confirm (ownership/pending/size), view-url gating, batch resolve | ✅ |
 | E2E (`test:storage`): reject disallowed content-type; real upload→confirm→view-url→download round-trip against live MinIO (byte-for-byte); reject confirm-before-upload; reject confirming someone else's asset; reject non-owner viewing `agency_document` | ✅ |
 | E2E: post with a real uploaded photo resolves `imageUrl` in feed and actually clears it (`imageMediaId: null`) on edit — regression test locking in a Prisma `undefined`-vs-`null` fix | ✅ |
+| E2E: cross-user denial for all 11 media purposes (campaign_photo, package_visual, post_media, story_media, chat_image, chat_document, profile_photo, previous_trip_photo, agency_logo, agency_document, campaign_document) | ✅ |
 | **Totals: 123 unit tests, 36 E2E tests, all green** (up from 98/29 before this feature) | ✅ |
 
 **Mobile — screens/routes**
@@ -1111,7 +1112,7 @@ Built entirely as a new `src/modules/group-campaigns/` module depending on the a
 
 ---
 
-## 11. Admin / Super Admin Panel — ⬜ not started, 🚧 heavily blocked — dedicated scoping pass required
+## 11. Admin / Super Admin Panel — 🔜 building now (agency verification shipped)
 
 **⚠️ SCOPING NOTICE:** largest concentration of unresolved open questions (#3, #5, #12, #17, #18, #19, #20, #21, #22, #23) and **zero UI reference** anywhere in figma-demo. Only the "not blocked" group below should be implemented before a dedicated scoping conversation with the user.
 
@@ -1122,6 +1123,7 @@ Built entirely as a new `src/modules/group-campaigns/` module depending on the a
 | Item | Status |
 |---|---|
 | Admin login + 2FA (`@RequirePlatformRole`) | ✅ |
+| Agency approve/reject endpoints (`GET /admin/agencies/pending`, `POST /admin/agencies/:id/approve`, `POST /admin/agencies/:id/reject`) with `@RequirePlatformRole(super_admin)`, Pino audit logs, MailService emails | ✅ |
 
 **Backend — Prisma models**
 
@@ -1154,7 +1156,7 @@ Built entirely as a new `src/modules/group-campaigns/` module depending on the a
 
 | Item | Blocked by |
 |---|---|
-| Registration approve/reject workflow specifics | #5, #10 |
+| Registration approve/reject workflow specifics | ✅ done |
 | Campaign fraud-flagging, auto-pause, pre- vs. post-moderation | #21, #22 |
 | Payment/transaction oversight: refunds, high-value flags, reports | #3, #20, #23 |
 | KYC/GDPR/payment-regulation enforcement + retention period | #23 |
@@ -1166,7 +1168,9 @@ Built entirely as a new `src/modules/group-campaigns/` module depending on the a
 
 | Test group | Status |
 |---|---|
+| unit: `AgenciesService` — `findPending`, `approve` (status guard + mail + audit), `reject` (status guard + reason + mail + audit) | ✅ |
 | unit: `AdminInviteService`, `AdminAuditLogService` (append-only), RBAC assignment, `TermsVersionService`, `TermsAcceptanceService`, `ContentReportService`, `VerifiedBadgeService` | ⬜ |
+| E2E: `agencies.e2e-spec.ts` — 8 tests: non-admin 403, list pending, approve, reject, double-approve 422, double-reject 422, 404 on missing, missing reason 400 | ✅ |
 | E2E: seed→login→invite→accept→role-restricted; audit immutability; T&C publish→re-acceptance; report→queue→action; badge assign/revoke; broadcast | ⬜ |
 | E2E (BLOCKED, deferred until scoped) | 🚧 |
 

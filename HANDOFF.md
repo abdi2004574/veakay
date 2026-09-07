@@ -56,9 +56,9 @@ See `docs/PROGRESS_TRACKER.md` for the full per-feature breakdown. Summary of wo
 ## Notable Cross-Cutting Gaps
 
 - **Payments, Wallet & Withdrawal (#6)** — ledger core is built (processor-agnostic pass, 2026-09-04): 41 unit + 38 E2E tests green. Remaining blockers are the client funding-rail decision (JazzCash / Easypaisa / bank gateway / Stripe Connect — TBD) and TRD open questions #3 (high-value threshold), #4 (refund-after-withdrawal), #5 (verification terminology), #27 (donation fee). No real Stripe / payment-processor credentials needed for the ledger layer; they're only needed when the real `IFundingProvider` implementation lands. The `mark-paid` admin endpoint is an MVP-only ops reconciliation path that is removed when the processor webhook replaces it.
-- **Storage module** done for post/story photos; `TravelerProfile.photoMediaId`, agency logo, agency documents, and campaign images still need mobile picker UI wiring per-screen (backend supports all `MediaPurpose` values).
+- **Storage module** `getViewUrl` now enforces purpose-based access control. Private campaign photos, friends-only posts/stories, profile privacy settings, agency approval status, and chat participant checks are all gated server-side. Content-type re-validation added to `confirmUpload`. 16 new unit tests + 8 new E2E regression tests added.
 - **Admin seed script** — first Super Admin has no creation path yet (no public registration for admins). Tracked in tracker feature #11.
-- **Agency approve/reject admin endpoints** — agencies reach `pending_verification` but nothing moves them to `approved`/`rejected` yet (Feature #11).
+- **Agency approve/reject admin endpoints** — shipped (Feature #11). `GET /admin/agencies/pending`, `POST /admin/agencies/:id/approve`, `POST /admin/agencies/:id/reject` with `@RequirePlatformRole(super_admin)` guard, Pino audit logs (`agency.verification.approved` / `agency.verification.rejected`), and email notifications via `MailService.sendAgencyApprovedEmail` / `sendAgencyRejectedEmail`.
 - **Manual API tester page** — open question; not built, not decided either way yet.
 
 ## Development Flow (now reflects actual practice across 5 features)
