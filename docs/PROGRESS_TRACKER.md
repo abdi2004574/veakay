@@ -17,7 +17,7 @@ Built by reading, in full: the TRD (688 lines), the section-by-section gap log (
 | 3 | Chat / Messaging | ✅ done |
 | 4 | Explore, Agency Directory & Reviews | ✅ done (scope narrowed to what's real — see below) |
 | 5 | Campaign Creation & Management | ✅ done (scope narrowed to what's real — see below) |
-| 6 | Payments, Wallet & Withdrawal | ⬜ not started · 🚧 most blocked |
+| 6 | Payments, Wallet & Withdrawal | ✅ wallet ledger core built · 🚧 external funding rail pending client decision + open questions #3/#4/#5/#27 |
 | 7 | Traveler Settings & Account | ✅ done |
 | 8 | Friends & Group Trips (remainder) | ✅ done |
 | 9 | Agency Dashboard & Business Tools | ✅ Packages & Trip Requests sub-scopes built (backend + mobile) · ⬜ remaining sub-scopes not started |
@@ -700,79 +700,95 @@ Answering that question surfaced a real gap: `GET /campaigns/:id` always support
 
 ---
 
-## 6. Payments, Wallet & Withdrawal — ⬜ not started, 🚧 most blocked
+## 6. Payments, Wallet & Withdrawal — ✅ wallet ledger core built (processor-agnostic)
 
-**Figma screens:** `WalletScreen.tsx`, `WithdrawalScreen.tsx` (note: figma-demo's `/app/withdraw` and `/app/withdrawal` both route to this same screen — build ONE real route), `PaymentMethodsScreen.tsx`, donate dialog in `CampaignDetailScreen.tsx`
+**Figma screens:** `WalletScreen.tsx`, `WithdrawalScreen.tsx` (note: figma-demo's `/app/withdraw` and `/app/withdrawal` both route to this same screen — build ONE real route). The `PaymentMethodsScreen.tsx` and `DonateDialog` are deferred until the funding rail is confirmed (see Later Scope). Per-feature doc: [`docs/features/wallet-ledger.md`](./features/wallet-ledger.md).
 
 **Backend — Prisma models**
 
 | Model | Fields | Status |
 |---|---|---|
-| `StripeConnectAccount` | userId, stripeAccountId, payoutsEnabled, chargesEnabled, detailsSubmitted, onboardingUrl? | ⬜ |
-| `Donation` | campaignId, donorUserId?, amount, currency, isAnonymous, giftMessage?, isGift, stripePaymentIntentId?, status, receiptEmailSentAt? | ⬜ |
-| `PaymentMethod` | userId, stripePaymentMethodId, type, brand?, last4?, expMonth?, expYear?, isDefault | ⬜ |
-| `PayoutAccount` | userId, type (bank/paypal/mobile_money/card), label, maskedIdentifier, isDefault | ⬜ |
-| `WithdrawalRequest` | userId, campaignId?, payoutAccountId, amount, status, stripePayoutId? — **records intent only, execution BLOCKED** | ⬜ |
+| `WalletAccount` | userId (UNIQUE), currency default 'USD', cachedBalance | ✅ |
+| `WalletTransaction` | walletAccountId, direction (credit\|debit), amount, currency, type (donation_received\|withdrawal\|refund\|commission\|booking_payment), referenceType?, referenceId?, idempotencyKey? (UNIQUE), description? | ✅ |
+| `WithdrawalRequest` | userId, campaignId?, payoutAccountId?, amount, currency, status (requested\|approved\|rejected\|paid), highValueThreshold? (stored, not enforced — #3), walletTransactionId? (UNIQUE, set on mark-paid), rejectionReason? | ✅ |
+| `Donation` (reworked) | campaignId, donorUserId?, donorDisplayName?, amount, currency, isAnonymous, giftMessage?, isGift, walletTransactionId? (UNIQUE, set by recordDonation), receiptEmailSentAt? | ✅ (decoupled from Stripe fields) |
+| `StripeConnectAccount` | | ⬜ DEPRECATED — kept in schema, awaiting funding-rail decision |
+| `PaymentMethod` | | ⬜ DEPRECATED — kept in schema |
+| `PayoutAccount` | | ⬜ DEPRECATED — kept in schema |
+| `StripeWebhookEvent` | | ⬜ DEPRECATED — kept in schema |
+
+Migration `20260904060000_wallet_ledger` applied to both dev and test databases.
 
 **Backend — endpoints**
 
 | Endpoint | Status |
 |---|---|
-| `POST /payments/connect/onboarding`, `GET .../status`, `POST .../refresh-link` — build now | ⬜ |
-| `POST /payments/webhook` (Stripe events) — build now | ⬜ |
-| `POST /payments/donations` — build now; commission/fee deduction BLOCKED (#27), zero fee taken | ⬜ |
-| `GET /payments/donations/mine`, `/campaigns/:id/donations`, `/campaigns/:id/top-contributors` — build now | ⬜ |
-| `GET /payments/wallet`, `/wallet/transactions` — build now, NO internal ledger table | ⬜ |
-| `GET/POST/PATCH/DELETE /payments/methods` — build now | ⬜ |
-| `GET/POST/PATCH/DELETE /payments/payout-accounts` (delete guarded if pending) — build now | ⬜ |
-| `POST /payments/withdrawals` — **STUB only**, BLOCKED on #3/#4/#5/#27 | ⬜ |
-| `GET /payments/withdrawals` — build now | ⬜ |
+| `GET /me/wallet` — auto-create on first call, returns balance + currency | ✅ |
+| `GET /me/wallet/transactions` — cursor-paginated, optional `?type=` filter | ✅ |
+| `GET /me/wallet/withdrawals` — cursor-paginated | ✅ |
+| `POST /me/wallet/withdrawals` — create `requested` withdrawal, balance unchanged (debit waits on mark-paid) | ✅ |
+| `GET /me/wallet/withdrawals/:id` — own detail only (404 cross-user) | ✅ |
+| `POST /admin/wallet/wallets/:userId/credit` — admin manual credit for ops reconciliation, Idempotency-Key required | ✅ |
+| `GET /admin/wallet/withdrawals` — platform-wide list with `?status=` filter | ✅ |
+| `GET /admin/wallet/withdrawals/:id` — admin detail with user info | ✅ |
+| `PATCH /admin/wallet/withdrawals/:id/review` — approve / reject, Idempotency-Key required | ✅ |
+| `POST /admin/wallet/withdrawals/:id/mark-paid` — debit ledger + flip to `paid`, Idempotency-Key required; MVP-only ops path | ✅ |
+| Real processor integration (JazzCash / Easypaisa / bank gateway / Stripe Connect — TBD) | ⬜ blocked on client funding-rail decision |
+| Public `POST /campaigns/:id/donate` endpoint that calls the real processor | ⬜ blocked on funding-rail decision |
+| `recordDonation` public HTTP endpoint | ⬜ deliberately not built — internal service hook only, called by (TBD) processor webhook |
+| Commission split on booking_payment type | ⬜ enum value reserved, no writer |
+| Refund-after-withdrawal handling (#4) | ⬜ deferred |
+| High-value threshold enforcement (#3) | ⬜ field kept on model, no reader |
+| Identity-verification step (#3 / #5) | ⬜ deferred |
+| Agency subscription billing (#28) | ⬜ explicitly out of scope; web-based Stripe Billing is the working assumption |
+| Donation fee (#27) | ⬜ full amount credited, zero fee deducted |
 
 **Backend — tests**
 
 | Test group | Status |
 |---|---|
-| unit: `PaymentsService` — connect onboarding, webhook handling, signature failure | ⬜ |
-| unit: `DonationsService` — create, anonymous, gift, receipt dispatch, no fee deducted | ⬜ |
-| unit: `WalletService` — summary aggregation, ledger | ⬜ |
-| unit: `PaymentMethodsService`, `PayoutAccountsService` — CRUD + delete guard | ⬜ |
-| unit: `WithdrawalsService` (stub) — intent only, no payout call | ⬜ |
-| E2E: Connect onboarding flow | ⬜ |
-| E2E: donation flow + receipt email | ⬜ |
-| E2E: anonymous donation, gift donation | ⬜ |
-| E2E: payment methods CRUD, payout-account delete-guard | ⬜ |
-| E2E: withdrawal stub, webhook signature rejection | ⬜ |
+| unit: `wallet.service.spec.ts` — getOrCreateWalletAccount, credit/debit (`_writeTransaction` idempotency, currency mismatch, insufficient balance), adminCredit, recordDonation (atomic donation + wallet credit + raisedAmount), listTransactions, requestWithdrawal, listMyWithdrawals, getWithdrawalDetail, reviewWithdrawal, markWithdrawalPaid, rejectWithdrawal, listAllWithdrawals | ✅ 40 tests |
+| unit: `manual-funding.provider.spec.ts` — always-ok stub | ✅ 1 test |
+| E2E: `test/wallet.e2e-spec.ts` — 9 describe blocks covering `GET /me/wallet`, `GET /me/wallet/transactions` (cursor pagination + `?type=` filter), admin credit (auth/role/404/idempotency/currency-mismatch/amount validation/happy path/replay same-body/replay different-body returns original), withdrawal request (insufficient/currency/no-Idempotency-Key/happy path with no debit/agency caller/role block), my withdrawals (empty/own-only/detail/404 cross-user), admin review (approve/reject/non-requested 422/role block/no-Idempotency-Key), admin mark-paid (happy path with debit + walletTransactionId/422 from requested/422 from already-paid/no-Idempotency-Key/role block), transaction list filters + cross-user isolation, role guards (admin blocked from /me/wallet, traveler blocked from /admin/wallet) | ✅ 38 tests |
 
-**Mobile — screens/routes**
+**Backend — design decisions**
 
-| Screen/Route | Status |
-|---|---|
-| `app/(traveler)/wallet.tsx` | ⬜ |
-| `app/(traveler)/withdrawal.tsx` — ONE real route, execution step shows in-dev/BLOCKED message | ⬜ |
-| `app/(traveler)/payment-methods.tsx` | ⬜ |
-| Donate dialog (in #5's Campaign Detail) | ⬜ |
+- **`IFundingProvider` interface boundary** — `WalletService` never imports a concrete provider. The `FUNDING_PROVIDER` injection token plus `IFundingProvider` (`deposit(request) → { ok, externalId?, message? }`) is the seam where JazzCash / Easypaisa / bank gateway / Stripe Connect lands. Today only `ManualFundingProvider` is registered; the service layer is untouched when the real provider is added.
+- **`ManualFundingProvider` is admin-only** — its only exposure is the admin credit endpoint, used for ops reconciliation during the MVP. No public money movement.
+- **Idempotency via unique key** — every wallet-mutating endpoint requires `Idempotency-Key` (8-128 chars, validated by `IdempotencyKeyGuard`). The key is persisted on `WalletTransaction.idempotencyKey` (UNIQUE). On replay, `_writeTransaction` short-circuits and returns the existing transaction — no double-write. Same body and different body both replay the original (see the E2E test "same key + different body returns ORIGINAL, NOT 409" — actual behavior, documented).
+- **Debit-on-paid-not-on-approve rationale** — approving a withdrawal flips the status but does NOT debit the wallet. Debit happens on `mark-paid`, when the (TBD) processor signals a successful external transfer. This means a reversal between approve and paid cannot strand a negative balance. The MVP exposes `mark-paid` as an admin-only ops endpoint because there is no real processor yet; it is removed once the processor webhook replaces it.
+- **Single-currency MVP** — every wallet defaults to `USD`. The schema accepts any 3-char currency string, but multi-currency conversion, FX rates, and per-user currency preference are not built.
+- **Audit log via Pino** — every state change emits one structured JSON line via `Logger` with a stable `audit` discriminator (`wallet.transaction`, `wallet.withdrawal.requested`, `wallet.withdrawal.reviewed`, `wallet.withdrawal.paid`), actor id, withdrawal id, amount, currency, idempotency key, and provider name. Sufficient for the admin audit-trail surface today.
+- **`recordDonation` is the internal hook** — atomically writes the donation row + wallet credit + campaign `raisedAmount` increment inside one Prisma `$transaction`. Not exposed via HTTP by design. The 40 unit tests cover the internal flow; E2E coverage of the public donation surface lands with the real processor.
 
-**Mobile — components**
+**Bugs found + fixed during this pass**
 
-| Component | Status |
-|---|---|
-| `BalanceCard`, `TransactionRow`, `PaymentMethodRow`, `PayoutAccountRow`, `WithdrawalStepper`, `AddPayoutAccountSheet`, `DonateSheet`, `TopContributorRow`, `ConnectStripeCard` | ⬜ |
+- `test/utils/register-admin.ts:56` — `.expect(200)` → `.expect(201)`. The admin login endpoint has no `@HttpCode` decorator so returns NestJS's POST default (201), matching `/auth/login` and `/auth/register/email`. The helper was wrong, the endpoint was right.
+- `test/utils/register-admin.ts:62` — `.expect(200)` → `.expect(201)`. Same root cause on the admin 2FA endpoint, discovered when Wave 2's full E2E run actually exercised the helper.
+- `test/wallet.e2e-spec.ts:54,89,111` — `/api/v1/admin/wallets/...` → `/api/v1/admin/wallet/wallets/...`. The controller's prefix is `admin/wallet`, not `admin`. Combined with the `@HttpCode` bug, this is why all three pre-existing admin-dependent tests were red.
+- `test/wallet.e2e-spec.ts` — extended from 6 tests to 38 across 9 describes (the original 6 admin-dependent tests are in the green count).
+- `src/modules/wallet/wallet.service.spec.ts` — reformatted from a one-line minified blob (~21 KB on a single line) to a properly-formatted 606-line file. Same 40 tests, all green; verified by running `npx jest src/modules/wallet` before and after.
 
-**Mobile — api & hooks**
+**Explicitly deferred (per the task scope, do NOT build until the funding rail is confirmed)**
 
-| File | Status |
-|---|---|
-| `src/api/payments.ts` | ⬜ |
-| `src/hooks/use-payments-queries.ts`, `use-payments-mutations.ts` | ⬜ |
+- Real processor integration (JazzCash / Easypaisa / bank gateway / Stripe Connect — TBD) — client decision pending. The seam is `IFundingProvider`.
+- Commission splitting on booking-payment wallet type — enum value reserved in `WalletTransactionType`, no service method writes it.
+- Refund-after-withdrawal / clawback — TRD Open Question #4 stays open.
+- High-value threshold enforcement — TRD Open Question #3 stays open; the column is on the model for the future.
+- Identity-verification step for high-value withdrawals — TRD Open Questions #3 / #5 stay open.
+- Public donation endpoint that calls the real processor — built alongside the real provider.
+- Donation fee — TRD Open Question #27 stays open; full amount credited today, zero fee deducted.
+- Agency subscription billing — TRD Open Question #28, explicitly out of scope for this feature.
 
 **Open questions (deferred — not blocking)**
 
 | # | Question | Default applied now |
 |---|---|---|
-| #3 | High-value withdrawal threshold | No threshold gate wired |
-| #4 | Refund-after-withdrawal/clawback | Not built |
-| #5 | "Verification" overloaded across 3 concepts | Withdrawal-eligibility gate not implemented |
-| #27 | Platform fee on donations vs. commission | Full amount recorded, zero fee deducted |
+| #3 | High-value withdrawal threshold | Column reserved on `WithdrawalRequest`; no service code reads it. |
+| #4 | Refund-after-withdrawal / clawback | Not built; define approach when the funding rail lands. |
+| #5 | "Verification" overloaded across 3 concepts | No eligibility gate wired; revisit when KYC step lands. |
+| #27 | Platform fee on donations vs. commission | Full donation amount credited to creator; zero fee deducted. |
+| #28 | Subscription tier purchase channel | Unrelated to this feature; working assumption is web-based Stripe Billing. |
 
 ---
 
