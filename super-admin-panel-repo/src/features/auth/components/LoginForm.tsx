@@ -24,7 +24,7 @@ export default function LoginForm() {
 
   const login = useMutation({
     mutationFn: () =>
-      postApi<LoginResponse>("/auth/admin/login", { email, password }),
+      postApi<LoginResponse>("/admin/auth/login", { email, password }),
     onSuccess: (res) => {
       if (res.data.requires2FA) {
         navigate(ROUTES.TWO_FACTOR, { state: { tempToken: res.data.tempToken } });

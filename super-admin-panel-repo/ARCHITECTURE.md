@@ -75,8 +75,8 @@ The admin panel has exactly one tier: `super_admin`. The `usePermissions` hook r
 
 | Admin Feature | Backend Endpoint |
 |---|---|
-| Admin Login | `POST /auth/admin/login` |
-| 2FA Verify | `POST /auth/admin/2fa` |
+| Admin Login | `POST /admin/auth/login` |
+| 2FA Verify | `POST /admin/auth/2fa` |
 | Forgot Password | `POST /auth/forgot-password` |
 | User List | `GET /admin/users` |
 | User Detail | `GET /admin/users/:id` |

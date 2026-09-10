@@ -21,7 +21,7 @@ export default function TwoFactorForm() {
   const verify = useMutation({
     mutationFn: () =>
       postApi<{ data: { user: unknown; accessToken: string; expiresAt: number } }>(
-        "/auth/admin/2fa",
+        "/admin/auth/2fa",
         { code, tempToken }
       ),
     onSuccess: (res) => {
