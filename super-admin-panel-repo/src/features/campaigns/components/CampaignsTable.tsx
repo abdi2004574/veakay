@@ -1,12 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getCampaigns, flagCampaign, unflagCampaign } from "../api/campaigns";
 import { Table } from "../../../components/ui/table";
-import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
-import { StatusBadge } from "../../../components/shared/StatusBadge";
+import StatusBadge from "../../../components/shared/StatusBadge";
 import { useState } from "react";
 import { Flag, Eye } from "lucide-react";
+import type { AdminCampaign } from "../types";
 
 export default function CampaignsTable() {
   const [search, setSearch] = useState("");
@@ -26,7 +26,7 @@ export default function CampaignsTable() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["campaigns"] }),
   });
 
-  const campaigns = data?.data ?? [];
+  const campaigns = (data?.data.data ?? []) as AdminCampaign[];
 
   return (
     <div className="space-y-4">

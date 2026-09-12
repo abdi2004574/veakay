@@ -1,4 +1,4 @@
-﻿import { getApi, patchApi } from "../../../utils/api";
+import { getApi, patchApi } from "../../../utils/api";
 import type { AdminProfile, NotificationPreferences } from "../types";
 
 export async function getAdminProfile() {

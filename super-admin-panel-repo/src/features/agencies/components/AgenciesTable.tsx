@@ -4,9 +4,10 @@ import { Table } from "../../../components/ui/table";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
-import { StatusBadge } from "../../../components/shared/StatusBadge";
+import StatusBadge from "../../../components/shared/StatusBadge";
 import { useState } from "react";
 import { Check, X, Eye } from "lucide-react";
+import type { AdminAgency } from "../types";
 
 export default function AgenciesTable() {
   const [search, setSearch] = useState("");
@@ -26,7 +27,7 @@ export default function AgenciesTable() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["agencies"] }),
   });
 
-  const agencies = data?.data ?? [];
+  const agencies = (data?.data.data ?? []) as AdminAgency[];
 
   return (
     <div className="space-y-4">

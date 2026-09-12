@@ -11,27 +11,6 @@ interface Toast {
   onAction?: () => void;
 }
 
-type ToastAction =
-  | { type: "add"; toast: Omit<Toast, "id"> }
-  | { type: "dismiss"; id: string }
-  | { type: "remove"; id: string };
-
-const toastReducer = (state: { toasts: Toast[] }, action: ToastAction): { toasts: Toast[] } => {
-  switch (action.type) {
-    case "add":
-      return {
-        toasts: [...state.toasts, { ...action.toast, id: `toast-${Math.random().toString(36).slice(2, 9)}` }],
-      };
-    case "dismiss":
-    case "remove":
-      return {
-        toasts: state.toasts.filter((t) => t.id !== action.id),
-      };
-    default:
-      return state;
-  }
-};
-
 const listeners: Array<(state: { toasts: Toast[] }) => void> = [];
 let state: { toasts: Toast[] } = { toasts: [] };
 

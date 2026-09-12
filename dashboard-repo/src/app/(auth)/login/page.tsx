@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { apiClient } from "@/lib/api";
+import { login } from "@/lib/auth";
 import { toast } from "sonner";
 
 export default function LoginPage() {
@@ -23,15 +23,10 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await apiClient.post("/admin/auth/login", { email, password });
-      const data = response.data.data;
-
-      if (data.requires2FA) {
-        router.push(`/login/2fa?pendingToken=${data.pendingToken}`);
-        return;
-      }
-
-      throw new Error("Unexpected response from server");
+      const data = await login(email, password);
+      router.push(
+        `/login/2fa?pendingToken=${encodeURIComponent(data.pendingToken)}`,
+      );
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Login failed";

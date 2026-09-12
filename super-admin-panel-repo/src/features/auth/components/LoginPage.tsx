@@ -7,7 +7,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-muted/40">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold">Super Admin Sign In</h1>
+          <h1 className="text-3xl font-bold">Super Admin Login</h1>
           <p className="text-sm text-muted-foreground mt-2">
             Enter your credentials to access the Veakay admin panel
           </p>

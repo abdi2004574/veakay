@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "../../../components/ui/button";
@@ -6,7 +6,6 @@ import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { postApi } from "../../../utils/api";
-import { useAuthStore } from "../../../stores/auth-store";
 import { ROUTES } from "../../../lib/constants";
 import { Shield } from "lucide-react";
 
@@ -20,7 +19,6 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const setAuth = useAuthStore((s) => s.setAuth);
 
   const login = useMutation({
     mutationFn: () =>
@@ -57,7 +55,7 @@ export default function LoginForm() {
             {error && <p className="text-sm text-destructive">{error}</p>}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <Input id="email" name="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>

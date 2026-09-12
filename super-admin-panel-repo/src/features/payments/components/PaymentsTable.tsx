@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getWithdrawals, reviewWithdrawal } from '../api/payments';
 import { Table } from '../../../components/ui/table';
-import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
-import { StatusBadge } from '../../../components/shared/StatusBadge';
+import StatusBadge from '../../../components/shared/StatusBadge';
 import { useState } from 'react';
+import type { AdminWithdrawal } from '../types';
 import { Check, X } from 'lucide-react';
 
 export default function PaymentsTable() {
@@ -21,7 +21,7 @@ export default function PaymentsTable() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['withdrawals'] }),
   });
 
-  const withdrawals = data?.data ?? [];
+  const withdrawals = (data?.data.data ?? []) as AdminWithdrawal[];
 
   return (
     <div className="space-y-4">

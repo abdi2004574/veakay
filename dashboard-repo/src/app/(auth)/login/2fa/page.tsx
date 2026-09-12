@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthStore } from "@/store/auth.store";
-import { apiClient } from "@/lib/api";
+import { verify2FA } from "@/lib/auth";
 import { toast } from "sonner";
 
 function TwoFactorForm() {
@@ -35,11 +35,7 @@ function TwoFactorForm() {
     setLoading(true);
 
     try {
-      const response = await apiClient.post("/admin/auth/2fa", {
-        pendingToken,
-        code,
-      });
-      const data = response.data.data;
+      const data = await verify2FA(pendingToken, code);
 
       useAuthStore.getState().setTokens(
         data.accessToken,
@@ -49,7 +45,9 @@ function TwoFactorForm() {
         id: data.user.id,
         email: data.user.email,
         displayName: data.user.displayName,
-        platformRole: data.user.platformRole,
+        role: data.user.role,
+        isEmailVerified: data.user.isEmailVerified,
+        onboardingComplete: data.user.onboardingComplete,
       });
 
       toast.success("Welcome back!");

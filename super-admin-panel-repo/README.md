@@ -1,4 +1,4 @@
-﻿# Veakay Super Admin Panel
+# Veakay Super Admin Panel
 
 Web-based Super Admin dashboard for the Veakay platform. Handles registration approval, fraud oversight, agency verification, and platform compliance. Consumes the shared NestJS backend API used by the mobile app.
 

@@ -1,15 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { getDashboardMetrics } from "../api/dashboard";
 import { Users, Building2, Megaphone, CreditCard, TrendingUp, Clock } from "lucide-react";
-import { formatCurrency } from "../../lib/utils";
+import { formatCurrency } from "../../../lib/utils";
+import type { DashboardMetrics } from "../types";
 
 const metricCards = [
-  { key: "totalUsers", label: "Total Users", icon: Users, color: "text-blue-500" },
-  { key: "totalAgencies", label: "Total Agencies", icon: Building2, color: "text-purple-500" },
-  { key: "totalCampaigns", label: "Total Campaigns", icon: Megaphone, color: "text-green-500" },
-  { key: "totalDonations", label: "Total Donations", icon: CreditCard, color: "text-pink-500" },
-  { key: "activeCampaigns", label: "Active Campaigns", icon: TrendingUp, color: "text-amber-500" },
-  { key: "pendingAgencies", label: "Pending Agencies", icon: Clock, color: "text-red-500" },
+  { key: "totalUsers" as keyof DashboardMetrics, label: "Total Users", icon: Users, color: "text-blue-500" },
+  { key: "totalAgencies" as keyof DashboardMetrics, label: "Total Agencies", icon: Building2, color: "text-purple-500" },
+  { key: "totalCampaigns" as keyof DashboardMetrics, label: "Total Campaigns", icon: Megaphone, color: "text-green-500" },
+  { key: "totalDonations" as keyof DashboardMetrics, label: "Total Donations", icon: CreditCard, color: "text-pink-500" },
+  { key: "activeCampaigns" as keyof DashboardMetrics, label: "Active Campaigns", icon: TrendingUp, color: "text-amber-500" },
+  { key: "pendingAgencies" as keyof DashboardMetrics, label: "Pending Agencies", icon: Clock, color: "text-red-500" },
 ] as const;
 
 export default function MetricsGrid() {
@@ -31,7 +32,7 @@ export default function MetricsGrid() {
     );
   }
 
-  const metrics = data?.data;
+  const metrics = data?.data as DashboardMetrics | undefined;
 
   return (
     <div className="space-y-6">
@@ -42,7 +43,7 @@ export default function MetricsGrid() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {metricCards.map((card) => {
           const Icon = card.icon;
-          const value = metrics?.[card.key as keyof typeof metrics];
+          const value = metrics?.[card.key];
           const displayValue =
             card.key === "totalDonations" && typeof value === "number"
               ? formatCurrency(value)

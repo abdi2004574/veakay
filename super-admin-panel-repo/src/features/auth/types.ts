@@ -1,5 +1,6 @@
 import type { UserRole, PlatformRole } from '@/types/common';
 
+
 export interface AdminUser {
   userId: string;
   email: string;

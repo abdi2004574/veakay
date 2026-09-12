@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "../../../components/ui/button";
@@ -9,6 +9,7 @@ import { postApi } from "../../../utils/api";
 import { useAuthStore } from "../../../stores/auth-store";
 import { ROUTES } from "../../../lib/constants";
 import { Shield } from "lucide-react";
+import type { AuthResponse } from "../types";
 
 export default function TwoFactorForm() {
   const [code, setCode] = useState("");
@@ -20,12 +21,20 @@ export default function TwoFactorForm() {
 
   const verify = useMutation({
     mutationFn: () =>
-      postApi<{ data: { user: unknown; accessToken: string; expiresAt: number } }>(
-        "/admin/auth/2fa",
-        { code, tempToken }
-      ),
+      postApi<AuthResponse>("/admin/auth/2fa", { code, tempToken }),
     onSuccess: (res) => {
-      setAuth(res.data.user, { accessToken: res.data.accessToken, expiresAt: res.data.expiresAt });
+      const expiresIn = res.data.expiresIn || 900;
+      setAuth(
+        {
+          id: res.data.user.id,
+          email: res.data.user.email,
+          displayName: res.data.user.displayName,
+          role: res.data.user.role as "traveler" | "agency" | "admin" | "super_admin",
+          platformRole: "super_admin",
+          isActive: true,
+        },
+        { accessToken: res.data.accessToken, expiresAt: Date.now() + expiresIn * 1000 }
+      );
       navigate(ROUTES.DASHBOARD);
     },
     onError: (err: Error) => setError(err.message),

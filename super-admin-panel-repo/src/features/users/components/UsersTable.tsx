@@ -1,10 +1,11 @@
-﻿import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { getUsers } from "../api/users";
 import { Table } from "../../../components/ui/table";
 import { Badge } from "../../../components/ui/badge";
 import { Input } from "../../../components/ui/input";
-import { StatusBadge } from "../../../components/shared/StatusBadge";
+import StatusBadge from "../../../components/shared/StatusBadge";
 import { useState } from "react";
+import type { AdminUser } from "../types";
 
 export default function UsersTable() {
   const [search, setSearch] = useState("");
@@ -13,7 +14,7 @@ export default function UsersTable() {
     queryFn: () => getUsers({ search, limit: 20 }),
   });
 
-  const users = data?.data ?? [];
+  const users = (data?.data.data ?? []) as AdminUser[];
 
   return (
     <div className="space-y-4">

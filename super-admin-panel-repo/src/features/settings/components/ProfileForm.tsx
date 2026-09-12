@@ -1,4 +1,4 @@
-﻿import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAdminProfile, updateAdminProfile } from "../api/settings";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
@@ -17,6 +17,8 @@ export default function ProfileForm() {
       toast({ title: "Profile updated", description: "Your changes have been saved." });
     },
   });
+
+  const profile = data?.data?.data;
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -46,19 +48,19 @@ export default function ProfileForm() {
             >
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" value={data?.data.email ?? ""} disabled />
+                <Input id="email" value={profile?.email ?? ""} disabled />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="displayName">Display Name</Label>
                 <Input
                   id="displayName"
                   name="displayName"
-                  defaultValue={data?.data.displayName ?? ""}
+                  defaultValue={profile?.displayName ?? ""}
                 />
               </div>
               <div className="space-y-2">
                 <Label>Role</Label>
-                <Input value={data?.data.platformRole ?? "super_admin"} disabled />
+                <Input value={profile?.platformRole ?? "super_admin"} disabled />
               </div>
               <Button type="submit" disabled={update.isPending}>
                 {update.isPending ? "Saving..." : "Save Changes"}

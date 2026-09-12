@@ -1,11 +1,17 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { Bell, LogOut, Settings, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Bell, User, LogOut } from 'lucide-react';
 import { ROUTES } from '@/lib/constants';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { useAuthStore } from '@/stores/auth-store';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export default function Header() {
-  const { user, logout } = useAuthStore();
+  const logout = useAuthStore((s) => s.logout);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -36,15 +42,23 @@ function UserMenu({ onLogout }: { onLogout: () => void }) {
   const displayName = user?.email ?? 'Admin';
 
   return (
-    <div className="relative">
-      <button
-        className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent"
-        type="button"
-        id="user-menu-button"
-      >
-        {displayName}
-        <User className="h-4 w-4" />
-      </button>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent"
+          type="button"
+          id="user-menu-button"
+        >
+          {displayName}
+          <User className="h-4 w-4" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={onLogout}>
+          <LogOut className="mr-2 h-4 w-4" />
+          Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

@@ -3,6 +3,7 @@ import { getBroadcastHistory } from "../api/notifications";
 import { Table } from "../../../components/ui/table";
 import { Badge } from "../../../components/ui/badge";
 import { Skeleton } from "../../../components/ui/skeleton";
+import type { AdminNotification } from "../types";
 
 export default function NotificationHistory() {
   const { data, isLoading } = useQuery({
@@ -10,7 +11,7 @@ export default function NotificationHistory() {
     queryFn: getBroadcastHistory,
   });
 
-  const notifications = data?.data ?? [];
+  const notifications = (data?.data.data ?? []) as AdminNotification[];
 
   return (
     <div className="space-y-4">

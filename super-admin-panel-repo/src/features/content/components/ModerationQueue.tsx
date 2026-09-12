@@ -3,9 +3,10 @@ import { getReports, resolveReport } from "../api/content";
 import { Table } from "../../../components/ui/table";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
-import { StatusBadge } from "../../../components/shared/StatusBadge";
+import StatusBadge from "../../../components/shared/StatusBadge";
 import { useState } from "react";
 import { Check, X } from "lucide-react";
+import type { ContentReport } from "../types";
 
 export default function ModerationQueue() {
   const [statusFilter, setStatusFilter] = useState<string>("pending");
@@ -21,7 +22,7 @@ export default function ModerationQueue() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["reports"] }),
   });
 
-  const reports = data?.data ?? [];
+  const reports = (data?.data.data ?? []) as ContentReport[];
 
   return (
     <div className="space-y-4">

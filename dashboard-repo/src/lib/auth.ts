@@ -1,36 +1,21 @@
 import { apiClient } from "./api";
 import { useAuthStore } from "@/store/auth.store";
+import type { LoginStep1Response, LoginStep2Response } from "@/types";
 
-export function getServerToken(): string | null {
-  try {
-    return useAuthStore.getState().token;
-  } catch {
-    return null;
-  }
-}
-
-export async function verifyServerAuth(): Promise<boolean> {
-  const token = getServerToken();
-  return !!token;
-}
-
-export async function login(email: string, password: string) {
+export async function login(
+  email: string,
+  password: string,
+): Promise<LoginStep1Response> {
   const response = await apiClient.post("/admin/auth/login", { email, password });
-  return response.data.data as { pendingToken: string; requires2FA: boolean };
+  return response.data.data as LoginStep1Response;
 }
 
-export async function verify2FA(pendingToken: string, code: string) {
+export async function verify2FA(
+  pendingToken: string,
+  code: string,
+): Promise<LoginStep2Response> {
   const response = await apiClient.post("/admin/auth/2fa", { pendingToken, code });
-  return response.data.data as {
-    user: {
-      id: string;
-      email: string;
-      displayName: string;
-      platformRole: "user" | "super_admin";
-    };
-    accessToken: string;
-    refreshToken: string;
-  };
+  return response.data.data as LoginStep2Response;
 }
 
 export async function logout() {

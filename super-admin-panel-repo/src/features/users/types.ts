@@ -1,4 +1,4 @@
-﻿export interface AdminUser {
+export interface AdminUser {
   id: string;
   email: string;
   displayName: string;

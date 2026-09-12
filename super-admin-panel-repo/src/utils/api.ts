@@ -1,4 +1,4 @@
-import { ApiErrorResponse, type ApiResult, type ApiResponse } from "../types/api";
+import { type ApiResult, type ApiResponse } from "../types/api";
 import { getToken, isTokenExpired, removeToken } from "../lib/auth-client";
 import { ROUTES } from "../lib/constants";
 

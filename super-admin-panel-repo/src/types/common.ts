@@ -14,6 +14,12 @@ export type WithdrawalStatus = "requested" | "approved" | "rejected" | "paid";
 
 export type ReportStatus = "pending" | "reviewed" | "actioned" | "dismissed";
 
+export type UserStatus = "active" | "inactive" | "suspended";
+
+export type AgencySubscriptionTier = "basic" | "premium" | "featured";
+
+export type PlatformRole = "user" | "super_admin";
+
 export type AuditAction =
   | "user.registered"
   | "user.login"

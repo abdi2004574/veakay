@@ -1,4 +1,3 @@
-import { ROUTES } from '@/lib/constants';
 import TwoFactorForm from '@/features/auth/components/TwoFactorForm';
 
 export default function TwoFactorPage() {

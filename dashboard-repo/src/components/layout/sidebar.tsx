@@ -14,9 +14,13 @@ import {
   UserPlus,
   BadgeCheck,
   Activity,
+  Award,
   LogOut,
   Menu,
   X,
+  Megaphone,
+  Settings,
+  AlertTriangle,
 } from "lucide-react";
 import { cn } from "@/components/ui/utils";
 import { Button } from "@/components/ui/button";
@@ -60,6 +64,11 @@ const navItems = [
     icon: Shield,
   },
   {
+    title: "Fraud Monitoring",
+    href: "/dashboard/fraud",
+    icon: AlertTriangle,
+  },
+  {
     title: "Audit Log",
     href: "/dashboard/audit-log",
     icon: FileText,
@@ -78,6 +87,21 @@ const navItems = [
     title: "Badges",
     href: "/dashboard/badges",
     icon: Activity,
+  },
+  {
+    title: "Broadcast",
+    href: "/dashboard/broadcast",
+    icon: Megaphone,
+  },
+  {
+    title: "Settings",
+    href: "/dashboard/settings",
+    icon: Settings,
+  },
+  {
+    title: "Top Performers",
+    href: "/dashboard/top-performers",
+    icon: Award,
   },
 ];
 

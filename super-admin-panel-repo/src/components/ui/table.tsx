@@ -1,4 +1,4 @@
-﻿import * as React from 'react';
+import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
@@ -62,14 +62,17 @@ const TableHead = React.forwardRef<
 ));
 TableHead.displayName = 'TableHead';
 
-const TableCell = React.forwardRef<
-  HTMLTableCellElement,
-  React.HTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
-  <td ref={ref} className={cn('p-4 align-middle', '[&:first-child]:pl-4', className)} {...props}>
-    {props.children}
-  </td>
-));
+interface TableCellProps extends React.HTMLAttributes<HTMLTableCellElement> {
+  colSpan?: number;
+}
+
+const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
+  ({ className, colSpan, ...props }, ref) => (
+    <td ref={ref} colSpan={colSpan} className={cn('p-4 align-middle', '[&:first-child]:pl-4', className)} {...props}>
+      {props.children}
+    </td>
+  ),
+);
 TableCell.displayName = 'TableCell';
 
 const TableCaption = React.forwardRef<

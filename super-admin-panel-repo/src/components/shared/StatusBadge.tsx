@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import type {
@@ -19,14 +18,12 @@ type StatusValue =
   | AgencySubscriptionTier
   | string;
 
-const statusConfig: Record<string, { variant: 'default' | 'secondary' | 'destructive' | 'success' | 'warning' | 'outline' }> =
-  {
+const statusConfig: Record<string, { variant: 'default' | 'secondary' | 'destructive' | 'success' | 'warning' | 'outline' }> = {
   active: { variant: 'success' },
   approved: { variant: 'success' },
   completed: { variant: 'success' },
   confirmed: { variant: 'success' },
   paid: { variant: 'success' },
-  resolved: { variant: 'success' },
   resolved: { variant: 'success' },
 
   pending: { variant: 'warning' },
@@ -56,13 +53,10 @@ export interface StatusBadgeProps {
 
 export default function StatusBadge({ status, className }: StatusBadgeProps) {
   const config = statusConfig[status.toLowerCase()] ?? { variant: 'outline' };
-  const label = status.replace(/_/g, ' ').replace(/w/g, (c) => c.toUpperCase());
+  const label = status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
   return (
-    <Badge
-      variant={config.variant}
-      className={cn('capitalize', className)}
-    >
+    <Badge variant={config.variant} className={cn('capitalize', className)}>
       {label}
     </Badge>
   );

@@ -5,6 +5,7 @@ import { Badge } from "../../../components/ui/badge";
 import { Input } from "../../../components/ui/input";
 import { Skeleton } from "../../../components/ui/skeleton";
 import { useState } from "react";
+import type { AuditLogEntry } from "../types";
 
 export default function AuditLogTable() {
   const [search, setSearch] = useState("");
@@ -13,7 +14,7 @@ export default function AuditLogTable() {
     queryFn: () => getAuditLogs({ limit: 20 }),
   });
 
-  const logs = data?.data ?? [];
+  const logs = (data?.data.data ?? []) as AuditLogEntry[];
 
   return (
     <div className="space-y-4">
@@ -54,7 +55,7 @@ export default function AuditLogTable() {
                     {log.actorUser?.displayName ?? "system"}
                   </td>
                   <td className="px-4 py-3 text-sm text-muted-foreground">
-                    {log.targetType ?? "—"}
+                    {log.targetType ?? "ï¿½"}
                     {log.targetId ? ` (${log.targetId.slice(0, 8)}...)` : ""}
                   </td>
                   <td className="px-4 py-3 text-sm text-muted-foreground">

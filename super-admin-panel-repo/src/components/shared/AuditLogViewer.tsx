@@ -1,5 +1,4 @@
 import { format } from 'date-fns';
-import { Eye } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -8,8 +7,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import type { AuditLog } from '@/features/audit/types';
-import { AUDIT_ACTIONS } from '@/lib/constants';
+import type { AuditLogEntry as AuditLog } from '@/features/audit/types';
 
 interface AuditLogViewerProps {
   logs: AuditLog[];
@@ -21,7 +19,13 @@ export default function AuditLogViewer({
   isLoading = false,
 }: AuditLogViewerProps) {
   if (isLoading) {
-    return <div className="space-y-2">{Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-12 bg-muted animate-pulse rounded" />)}</div>;
+    return (
+      <div className="space-y-2">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="h-12 bg-muted animate-pulse rounded" />
+        ))}
+      </div>
+    );
   }
 
   if (!logs.length) {
@@ -44,13 +48,13 @@ export default function AuditLogViewer({
               <Badge variant="outline">{format(new Date(log.createdAt), 'PPpp')}</Badge>
             </div>
             <CardDescription>
-              By {log.actorName ?? log.actorId} on {log.targetType}:{log.targetId}
+              By {log.actorUser?.displayName ?? log.actorRole} on {log.targetType}:{log.targetId}
             </CardDescription>
           </CardHeader>
-          {log.diff && (
+          {log.metadata && (
             <CardContent>
               <pre className="text-xs whitespace-pre-wrap bg-muted p-2 rounded">
-                {JSON.stringify(log.diff, null, 2)}
+                {JSON.stringify(log.metadata, null, 2)}
               </pre>
             </CardContent>
           )}

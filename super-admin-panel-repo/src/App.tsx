@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { useRequireAuth } from '@/hooks/use-auth';
 import { ROUTES } from '@/lib/constants';
 import AppShell from '@/components/layout/AppShell';
@@ -18,11 +18,7 @@ import NotFoundPage from '@/components/shared/NotFoundPage';
 
 function ProtectedLayout() {
   useRequireAuth();
-  return (
-    <AppShell>
-      <Outlet />
-    </AppShell>
-  );
+  return <AppShell />;
 }
 
 function App() {

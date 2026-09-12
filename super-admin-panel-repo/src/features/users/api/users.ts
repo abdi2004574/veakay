@@ -1,4 +1,4 @@
-﻿import { getApi, patchApi } from "../../../utils/api";
+import { getApi, patchApi } from "../../../utils/api";
 import type { AdminUser, UserFilters, UserDetail } from "../types";
 
 export async function getUsers(filters?: UserFilters) {

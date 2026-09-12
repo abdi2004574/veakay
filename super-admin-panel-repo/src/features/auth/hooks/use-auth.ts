@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { login, verifyTwoFactor, logout, forgotPassword } from '@/features/auth/api/auth';
 import { AUTH_QUERY_KEYS } from '@/features/auth/api/auth';
-import { setToken, removeToken, getToken } from '@/lib/auth-client';
+import { getToken } from '@/lib/auth-client';
 import { useAuthStore } from '@/stores/auth-store';
-import type { LoginCredentials, TwoFactorCredentials, AuthResponse } from '@/features/auth/types';
+import type { AuthResponse } from '@/features/auth/types';
 
 export function useLogin() {
   const queryClient = useQueryClient();
@@ -21,19 +21,17 @@ export function useTwoFactor() {
     mutationFn: verifyTwoFactor,
     onSuccess: (data: AuthResponse) => {
       const expiresIn = data.expiresIn || 900;
-      setAuth({
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
-        expiresAt: Date.now() + expiresIn * 1000,
-        user: {
+      setAuth(
+        {
           id: data.user.id,
           email: data.user.email,
           displayName: data.user.displayName,
-          role: data.user.role,
-          platformRole: data.user.role,
-          isEmailVerified: data.user.isEmailVerified,
+          role: data.user.role as "traveler" | "agency" | "admin" | "super_admin",
+          platformRole: "super_admin",
+          isActive: true,
         },
-      });
+        { accessToken: data.accessToken, expiresAt: Date.now() + expiresIn * 1000 }
+      );
     },
   });
 }
@@ -60,7 +58,7 @@ export function useCurrentUser() {
     queryKey: AUTH_QUERY_KEYS.me,
     queryFn: () => {
       if (!token) return null;
-      return { user: token.user };
+      return { accessToken: token.accessToken };
     },
     enabled: !!token,
     staleTime: 5 * 60 * 1000,

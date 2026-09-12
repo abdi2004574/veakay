@@ -30,7 +30,7 @@ type FormFieldProps<
       error?: { message?: string };
     };
     formState: unknown;
-  }) => React.ReactNode;
+  }) => React.ReactElement;
 };
 
 function FormField<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>({
@@ -87,10 +87,10 @@ FormDescription.displayName = 'FormDescription';
 
 const FormMessage = React.forwardRef<
   HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => {
-  const { formState, name } = useFormContext();
-  const error = formState?.errors?.[name]?.message;
+  React.HTMLAttributes<HTMLParagraphElement> & { name?: string }
+>(({ className, name: fieldName, ...props }, ref) => {
+  const { formState } = useFormContext();
+  const error = fieldName ? formState?.errors?.[fieldName]?.message : undefined;
 
   if (!error) return null;
 

@@ -2,13 +2,13 @@ import { Link } from 'react-router-dom';
 import { ChevronLeft, Menu } from 'lucide-react';
 import { ROUTES, APP_TITLE } from '@/lib/constants';
 import Navigation from './Navigation';
-import { useUIStore } from '@/stores/ui-store';
+import { useUiStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export default function Sidebar() {
-  const { sidebarCollapsed, toggleSidebar } = useUIStore();
+  const { sidebarCollapsed, toggleSidebar } = useUiStore();
   const user = useAuthStore((s) => s.user);
 
   return (

@@ -111,4 +111,16 @@ export async function apiDelete<T>(url: string, config?: AxiosRequestConfig): Pr
   return response.data.data as T;
 }
 
+export interface ApiEnvelope<T> {
+  success: boolean;
+  data: T;
+  meta?: Record<string, unknown>;
+  error?: { code: string; message: string };
+}
+
+export async function apiGetRaw<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
+  const response = await apiClient.get(url, config);
+  return response.data as T;
+}
+
 export default apiClient;

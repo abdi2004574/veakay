@@ -12,7 +12,7 @@ export function formatCurrency(value: number, currency = "USD"): string {
   }).format(value);
 }
 
-export function formatDate(date: Date | string, format = "PPP"): string {
+export function formatDate(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
   return new Intl.DateTimeFormat("en-US", {
     year: "numeric",

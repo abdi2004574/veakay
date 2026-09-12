@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Flag, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -8,7 +7,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   Form,
@@ -60,7 +58,7 @@ export default function ReportFlagButton({
     console.log('Reporting', contentType, contentId, values);
     toast({
       title: 'Report submitted',
-      description: `Content has been flagged for review.`,
+      description: 'Content has been flagged for review.',
       variant: 'default',
     });
     onReport?.();
@@ -70,11 +68,6 @@ export default function ReportFlagButton({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-          <Flag className="h-4 w-4" />
-        </Button>
-      </DialogTrigger>
       <DialogContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
@@ -94,7 +87,7 @@ export default function ReportFlagButton({
                     <FormControl>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        defaultValue={field.value as string}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select a reason" />
@@ -126,7 +119,9 @@ export default function ReportFlagButton({
                       <Textarea
                         placeholder="Provide additional context..."
                         className="resize-none"
-                        {...field}
+                        value={(field.value as string) ?? ""}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
                       />
                     </FormControl>
                     <FormMessage />

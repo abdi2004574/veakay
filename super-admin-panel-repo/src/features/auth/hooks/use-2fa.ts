@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { verifyTwoFactor } from '@/features/auth/api/auth';
-import type { TwoFactorCredentials, AuthResponse } from '@/features/auth/types';
+import type { AuthResponse } from '@/features/auth/types';
 
 export function useTwoFactorMutation() {
   const [attemptsRemaining, setAttemptsRemaining] = useState(5);
