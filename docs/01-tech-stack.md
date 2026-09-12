@@ -91,7 +91,7 @@ Identity verification        → Stripe Connect's onboarding KYC covers account-
 
 **Not used:** RevenueCat. Veakay's "subscription tiers" belong to agencies (B2B), not a consumer app-store subscription — there's no clean RevenueCat use case here the way Miralynk has one for its Free/Pro/Premium end-user tiers. Do not wire RevenueCat or native IAP until open question #28 is answered, and even then, the default assumption should be tested first (web billing, not IAP) since it avoids Apple/Google's revenue cut entirely.
 
-See `14-payments-and-stripe.md` for the full payment architecture.
+See `features/wallet-ledger.md` for the full payment architecture.
 
 ## Video Calling
 

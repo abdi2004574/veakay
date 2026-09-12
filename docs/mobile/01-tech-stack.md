@@ -82,7 +82,7 @@ Styling                     → NativeWind (Tailwind for React Native) — figma
 Forms and validation         → React Hook Form + Zod — minimal re-renders, schema-based validation that
                                 mirrors the backend's DTO validation conceptually
 Audio/video calling            → whichever vendor is chosen for ICallProvider on the backend side, its client SDK
-                                  (not yet chosen, see 00-overview.md and ../14-payments-and-stripe.md);
+                                  (not yet chosen, see 00-overview.md and \.\./features/wallet-ledger.md);
                                   confirm it has (or can get) an Expo config plugin before locking it in
 ```
 

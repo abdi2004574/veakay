@@ -51,7 +51,7 @@ Mutations that DO move money (donations, withdrawals, subscription changes):
     with the request (Stripe supports idempotency keys natively on its API). This is the critical
     payments-specific rule: without an idempotency key, a client-side retry after a lost response could
     double-charge a donor or double-process a withdrawal. This must be enforced on the backend side too,
-    see ../14-payments-and-stripe.md and ../03-engineering-principles.md.
+    see \.\./features/wallet-ledger.md and ../03-engineering-principles.md.
 ```
 
 ### 4. Crash Reporting and Error Logging

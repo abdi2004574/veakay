@@ -1,0 +1,18 @@
+
+> veakay-dashboard@1.0.0 dev
+> next dev
+
+   ▲ Next.js 15.1.2
+   - Local:        http://localhost:3000
+   - Network:      http://10.0.0.1:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 23.7s
+ ✓ Compiled /src/middleware in 3.3s
+ ✓ Compiled (99 modules)
+ ○ Compiling /login ...
+ ✓ Compiled /login in 86.8s (846 modules)
+ GET /login 200 in 92744ms
+
+C:\Users\LENOVO\Desktop\veakay-handoff\dashboard-repo>

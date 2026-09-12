@@ -52,7 +52,7 @@ These must never be committed, to any of the three repos:
 - `11-background-jobs.md` — BullMQ queues and job definitions
 - `12-real-time-and-websockets.md` — Socket.io gateways, chat events
 - `13-notifications-and-push.md` — notification types, delivery channels, settings
-- `14-payments-and-stripe.md` — Stripe Connect architecture (replaces the RevenueCat pattern used on Miralynk, since Veakay's money flows are fundamentally different)
+- `features/wallet-ledger.md` — processor-agnostic wallet ledger architecture with a ManualFundingProvider default; agency subscription billing is handled by RevenueCat native IAP, not the wallet ledger
 
 **Mobile docs** (`docs/mobile/`, read before scaffolding or implementing anything in `mobile-app-repo/`):
 - `mobile/00-overview.md` — app structure (Traveler + Agency experiences), `figma-demo/` as the design reference
@@ -67,7 +67,7 @@ These must never be committed, to any of the three repos:
 - Redis 7 (Docker), cache, BullMQ queues, Socket.io pub/sub adapter
 - BullMQ + @nestjs/bullmq, background jobs (notification dispatch, campaign/badge milestone checks, scheduled reports)
 - Socket.io + @socket.io/redis-adapter, real-time chat (traveler-friend, group, traveler-agency)
-- Stripe Connect, donations, agency/traveler payouts, commission splitting, agency subscription billing (client-confirmed processor)
+- Stripe Connect, donations, agency/traveler payouts, commission splitting (agency subscription billing is handled by RevenueCat native IAP, not Stripe)
 - MinIO (Docker, local) / AWS S3 (production), S3-compatible, no code change to swap. Stores campaign images, agency documents, chat media, profile photos.
 - Firebase Admin SDK, push notifications only, NOT authentication
 - Generic SMTP (via `nodemailer`), transactional email (OTP delivery, receipts) in prod, MailHog locally. Provider not yet chosen, provider-agnostic by design (host/port/credentials in env vars, no vendor SDK), confirmed locally as MailHog + MinIO for dev.
@@ -76,7 +76,7 @@ These must never be committed, to any of the three repos:
 
 **Deliberately different from the team's Miralynk project:**
 - No Twilio/SMS OTP, the Veakay TRD only specifies email OTP + Google/Apple social login, no phone-based auth anywhere.
-- No RevenueCat by default, the TRD's "subscription tiers" (Basic/Premium/Featured) belong to **agencies**, not a consumer app-store subscription. Whether this is even purchasable in-app is an open question (`docs/Veakay_TRD_Open_Questions.md` item #28); default assumption is a web-based billing page using Stripe Billing directly, sidestepping Apple/Google in-app purchase requirements entirely. Do not wire RevenueCat or native IAP until that question is answered.
+- **RevenueCat native IAP (RESOLVED 2026-09-12)**: the TRD's "subscription tiers" (Basic/Premium/Featured) belong to **agencies**, purchased natively on iOS and Android via RevenueCat. Open Question #28 is resolved for this implementation - the user explicitly chose RevenueCat native IAP over web-based Stripe Billing. Backend receives the official RevenueCat envelope + `X-RevenueCat-Webhook-Signature`, verifies HMAC/timestamp, deduplicates with Redis, resolves the agency, and updates `Agency.subscriptionTier`. Mobile uses `react-native-purchases` with platform API keys. Do not describe Stripe as the agency subscription provider.
 - Video/audio calling vendor is TBD (the TRD requires "Audio & Video Calls with Agency" but never names a vendor). Wrap it behind an interface (`ICallProvider`) from day one so the choice is swappable.
 
 ## External Services Still Undecided — Ask Before Building, Don't Default
