@@ -12,4 +12,11 @@ export const ROUTES = {
   NOTIFICATIONS: "/notifications",
   AUDIT: "/audit",
   SETTINGS: "/settings",
-} as const;export const APP_TITLE = "Veakay";
+  INVITES: "/invites",
+  BADGES: "/badges",
+  FRAUD: "/fraud",
+  TOP_PERFORMERS: "/top-performers",
+  ANALYTICS: "/analytics",
+} as const;
+
+export const APP_TITLE = "Veakay";

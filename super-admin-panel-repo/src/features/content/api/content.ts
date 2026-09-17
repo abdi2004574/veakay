@@ -7,7 +7,7 @@ export async function getReports(filters?: ReportFilters) {
   if (filters?.targetType) params.targetType = filters.targetType;
   if (filters?.cursor) params.cursor = filters.cursor;
   if (filters?.limit) params.limit = String(filters.limit);
-  return getApi<{ data: ContentReport[]; meta: { cursor: string; hasMore: boolean } }>(
+  return getApi<{items: ContentReport[]; nextCursor: string|null}>(
     "/admin/reports",
     params
   );

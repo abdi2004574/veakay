@@ -19,7 +19,7 @@ const toastVariants = cva(
       variant: {
         default: 'border bg-background text-foreground',
         destructive: 'border-destructive bg-destructive/10 text-destructive',
-        success: 'border-green-600 bg-green-50 text-green-900',
+        success: 'border-success/50 bg-success/10 text-success-foreground',
       },
     },
     defaultVariants: {
@@ -38,7 +38,7 @@ const ToastViewport = React.forwardRef<
     ref={ref}
     className={cn(
       'fixed bottom-0 z-50 flex max-h-screen w-full flex-col-reverse gap-2 p-4',
-      'xbottom-0 xb:right-4 xb:top-auto',
+      'bottom-0 right-4 top-auto',
       className,
     )}
     {...props}

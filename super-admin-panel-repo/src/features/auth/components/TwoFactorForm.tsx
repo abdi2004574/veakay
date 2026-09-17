@@ -1,14 +1,12 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
-import { Label } from "../../../components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
-import { postApi } from "../../../utils/api";
-import { useAuthStore } from "../../../stores/auth-store";
-import { ROUTES } from "../../../lib/constants";
-import { Shield } from "lucide-react";
+import { GradientButton } from "@/components/ui/gradient-button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { postApi } from "@/utils/api";
+import { useAuthStore } from "@/stores/auth-store";
+import { ROUTES } from "@/lib/constants";
 import type { AuthResponse } from "../types";
 
 export default function TwoFactorForm() {
@@ -16,12 +14,12 @@ export default function TwoFactorForm() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-  const tempToken = location.state?.tempToken;
+  const pendingToken = location.state?.pendingToken;
   const setAuth = useAuthStore((s) => s.setAuth);
 
   const verify = useMutation({
     mutationFn: () =>
-      postApi<AuthResponse>("/admin/auth/2fa", { code, tempToken }),
+      postApi<AuthResponse>("/admin/auth/2fa", { code, pendingToken }, true),
     onSuccess: (res) => {
       const expiresIn = res.data.expiresIn || 900;
       setAuth(
@@ -29,11 +27,15 @@ export default function TwoFactorForm() {
           id: res.data.user.id,
           email: res.data.user.email,
           displayName: res.data.user.displayName,
-          role: res.data.user.role as "traveler" | "agency" | "admin" | "super_admin",
+          role: res.data.user.role as
+            "traveler" | "agency" | "admin" | "super_admin",
           platformRole: "super_admin",
           isActive: true,
         },
-        { accessToken: res.data.accessToken, expiresAt: Date.now() + expiresIn * 1000 }
+        {
+          accessToken: res.data.accessToken,
+          expiresAt: Date.now() + expiresIn * 1000,
+        },
       );
       navigate(ROUTES.DASHBOARD);
     },
@@ -47,37 +49,35 @@ export default function TwoFactorForm() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary">
-            <Shield className="h-6 w-6 text-white" />
-          </div>
-          <CardTitle className="text-2xl font-bold">Two-Factor Authentication</CardTitle>
-          <p className="text-sm text-muted-foreground">Enter the 6-digit code from your authenticator app</p>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && <p className="text-sm text-destructive">{error}</p>}
-            <div className="space-y-2">
-              <Label htmlFor="code">Verification Code</Label>
-              <Input
-                id="code"
-                type="text"
-                inputMode="numeric"
-                maxLength={6}
-                value={code}
-                onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                required
-                className="text-center text-2xl tracking-widest"
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={verify.isPending}>
-              {verify.isPending ? "Verifying..." : "Verify"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+    <form onSubmit={handleSubmit} className="space-y-5">
+      {error && (
+        <p className="text-sm font-medium text-destructive" role="alert">
+          {error}
+        </p>
+      )}
+      <div className="space-y-2">
+        <Label htmlFor="code">Verification Code</Label>
+        <Input
+          id="code"
+          name="code"
+          type="text"
+          inputMode="numeric"
+          maxLength={6}
+          value={code}
+          onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+          required
+          autoComplete="one-time-code"
+          disabled={verify.isPending}
+          className="h-12 rounded-2xl border-border bg-[var(--input-background)] text-center text-2xl tracking-widest"
+        />
+      </div>
+      <GradientButton
+        type="submit"
+        className="w-full"
+        disabled={verify.isPending}
+      >
+        {verify.isPending ? "Verifying..." : "Verify"}
+      </GradientButton>
+    </form>
   );
 }

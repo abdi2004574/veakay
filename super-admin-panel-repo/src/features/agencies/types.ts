@@ -1,16 +1,18 @@
-import type { AgencyStatus } from "../../types/common";
+import type { AgencyStatus, AgencySubscriptionTier } from "../../types/common";
 
 export interface AdminAgency {
   id: string;
   agencyName: string;
-  businessContact: string;
-  businessAddress: string;
+  businessContact: string | null;
+  businessAddress: string | null;
   status: AgencyStatus;
-  reputationScore?: number;
-  subscriptionTier: "basic" | "premium" | "featured";
-  description?: string;
+  rejectionReason: string | null;
+  reputationScore: number | null;
+  subscriptionTier: AgencySubscriptionTier;
   createdAt: string;
-  user: { id: string; email: string; displayName: string; isActive: boolean };
+  userId: string;
+  userEmail: string;
+  userDisplayName: string | null;
 }
 
 export interface AgencyDocument {
@@ -27,7 +29,7 @@ export interface AgencyDetail extends AdminAgency {
 export interface AgencyFilters {
   search?: string;
   status?: AgencyStatus;
-  subscriptionTier?: string;
+  subscriptionTier?: AgencySubscriptionTier;
   cursor?: string;
   limit?: number;
 }

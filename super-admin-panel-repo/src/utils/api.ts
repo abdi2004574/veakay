@@ -15,7 +15,7 @@ class ApiError extends Error {
   }
 }
 
-async function handleResponse<T>(response: Response): Promise<ApiResult<T>> {
+async function handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
   const contentType = response.headers.get("content-type");
   if (!contentType?.includes("application/json")) {
     if (response.status === 204) {
@@ -33,13 +33,18 @@ async function handleResponse<T>(response: Response): Promise<ApiResult<T>> {
   return body;
 }
 
+export interface ApiRequestOptions extends RequestInit {
+  skipAuth?: boolean;
+}
+
 export async function apiRequest<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: ApiRequestOptions = {}
 ): Promise<ApiResponse<T>> {
+  const { skipAuth = false, ...fetchOptions } = options;
   const token = getToken();
 
-  if (isTokenExpired(token)) {
+  if (!skipAuth && isTokenExpired(token)) {
     removeToken();
     window.location.href = ROUTES.LOGIN;
     throw new ApiError("UNAUTHORIZED", "Session expired", 401);
@@ -56,7 +61,7 @@ export async function apiRequest<T>(
   }
 
   const response = await fetch(url, {
-    ...options,
+    ...fetchOptions,
     headers,
   });
 
@@ -68,10 +73,6 @@ export async function apiRequest<T>(
 
   const result = await handleResponse<T>(response);
 
-  if (result.success === false) {
-    throw new ApiError(result.error.code, result.error.message, response.status);
-  }
-
   return result;
 }
 
@@ -80,10 +81,11 @@ export async function getApi<T>(endpoint: string, params?: Record<string, string
   return apiRequest<T>(`${endpoint}${query}`, { method: "GET" });
 }
 
-export async function postApi<T>(endpoint: string, body?: unknown): Promise<ApiResponse<T>> {
+export async function postApi<T>(endpoint: string, body?: unknown, skipAuth = false): Promise<ApiResponse<T>> {
   return apiRequest<T>(endpoint, {
     method: "POST",
     body: body ? JSON.stringify(body) : undefined,
+    skipAuth,
   });
 }
 

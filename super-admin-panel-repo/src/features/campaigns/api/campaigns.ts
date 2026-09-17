@@ -9,16 +9,16 @@ export async function getCampaigns(filters?: CampaignFilters) {
   if (filters?.flagged !== undefined) params.flagged = String(filters.flagged);
   if (filters?.cursor) params.cursor = filters.cursor;
   if (filters?.limit) params.limit = String(filters.limit);
-  return getApi<{ data: AdminCampaign[]; meta: { cursor: string; hasMore: boolean } }>(
+  return getApi<AdminCampaign[]>(
     "/admin/campaigns",
     params
   );
 }
 
 export async function flagCampaign(campaignId: string, reason: string) {
-  return patchApi<{ data: AdminCampaign }>(`/admin/campaigns/${campaignId}/flag`, { reason });
+  return patchApi<AdminCampaign>("/admin/campaigns/" + campaignId + "/flag", { reason });
 }
 
 export async function unflagCampaign(campaignId: string) {
-  return patchApi<{ data: AdminCampaign }>(`/admin/campaigns/${campaignId}/flag`, { reason: "" });
+  return patchApi<AdminCampaign>("/admin/campaigns/" + campaignId + "/flag", { reason: "" });
 }

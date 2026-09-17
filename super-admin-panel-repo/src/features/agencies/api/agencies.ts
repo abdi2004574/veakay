@@ -1,5 +1,8 @@
-import { getApi, patchApi } from "../../../utils/api";
-import type { AdminAgency, AgencyDetail, AgencyFilters } from "../types";
+import { getApi, postApi } from "../../../utils/api";
+import type {
+  AdminAgency,
+  AgencyFilters,
+} from "../types";
 
 export async function getAgencies(filters?: AgencyFilters) {
   const params: Record<string, string> = {};
@@ -8,23 +11,16 @@ export async function getAgencies(filters?: AgencyFilters) {
   if (filters?.subscriptionTier) params.subscriptionTier = filters.subscriptionTier;
   if (filters?.cursor) params.cursor = filters.cursor;
   if (filters?.limit) params.limit = String(filters.limit);
-  return getApi<{ data: AdminAgency[]; meta: { cursor: string; hasMore: boolean } }>(
+  return getApi<AdminAgency[]>(
     "/admin/agencies",
     params
   );
 }
 
-export async function getAgency(agencyId: string) {
-  return getApi<{ data: AgencyDetail }>(`/admin/agencies/${agencyId}`);
-}
-
 export async function approveAgency(agencyId: string) {
-  return patchApi<{ data: AdminAgency }>(`/admin/agencies/${agencyId}`, { status: "approved" });
+  return postApi<AdminAgency>(`/admin/agencies/${agencyId}/approve`);
 }
 
 export async function rejectAgency(agencyId: string, reason: string) {
-  return patchApi<{ data: AdminAgency }>(`/admin/agencies/${agencyId}`, {
-    status: "rejected",
-    rejectionReason: reason,
-  });
+  return postApi<AdminAgency>(`/admin/agencies/${agencyId}/reject`, { reason });
 }

@@ -14,9 +14,11 @@ This file is local-only and must not be committed, in any of the three repos. Up
 
 `docs/PROGRESS_TRACKER.md` was rewritten from the VK-xxx sprint-numbered format to a feature-based tracker (11 features, table format with ?/?/??/?? status per item) ? the sprint sheet and even the TRD itself are AI-generated and demonstrably inconsistent in places, so `figma-demo/`'s actual screens are now treated as the real source of truth wherever the UI shows something concrete. Check that file first for what's done/next; this section here just summarizes.
 
-## Current Project State (as of 2026-09-11)
+## Current Project State (as of 2026-09-16)
 
 The Auth module (traveler + agency + admin, including the post-signup onboarding wizard), the Social Feed/Stories/Friends module (including the Storage module built mid-feature to unblock it), the Chat / Messaging module, Explore/Agency Directory/Reviews, Campaign Creation & Management, Traveler Settings & Account, Friends & Group Trips (the group-fund money logic), **Notifications backend (Feature #10), Agency Packages (#9A) + Trip Requests & Communication (#9B)** are all built end to end, backend and mobile together, and verified against a live, fully dockerized stack. Prior full-suite state (2026-09-12): 539/539 unit tests (41 suites) and 239/239 E2E tests (22 suites), all green. New focused checks: backend RevenueCat unit 30/30, RevenueCat E2E 14/14, wallet production regression E2E 1/1, backend build; mobile RevenueCat 44/44, focused lint, Expo web build. Native iOS/Android builds were not run. The previously-blocked CallsService DI issue is resolved. The wallet ledger core now has a labeled manual-funding demo (`POST /campaigns/:id/donate-manual` + mobile `DonateSheet`/wallet screens) that atomically credits the creator wallet and increments `Campaign.raisedAmount` - a demo path, not a real payment processor. **Agency subscriptions (Feature #9 / Open Question #28) are handled by RevenueCat native IAP on iOS and Android, confirmed 2026-09-12** - the backend RevenueCat webhook verifies the official envelope + `X-RevenueCat-Webhook-Signature` (HMAC/timestamp), deduplicates with Redis, resolves the agency, and updates `Agency.subscriptionTier`; mobile uses `react-native-purchases` with platform API keys. Stripe is NOT the agency subscription path.
+
+**As of 2026-09-16: frontend typecheck/lint/build pass; backend TypeScript build passes with 42 agencies unit tests passing; E2E and mobile native builds are environment-blocked (see Known Issues).**
 
 **Backend (`backend-repo/`)**: NestJS 11 + Prisma 6 + PostgreSQL 17 + Redis 7, scaffolded and running. Fully dockerized via `docker-compose.yml` on an uncommon port block (chosen so this stack never collides with other local projects like Miralynk, which uses the standard defaults):
 
@@ -70,6 +72,8 @@ See `docs/PROGRESS_TRACKER.md` for the full per-feature breakdown. Summary of wo
 - **Agency approve/reject + full admin panel (Feature #11)** ? shipped. Agency approve/reject endpoints, AdminInvite accept/revoke, AdminAuditLog append-only, ContentReport cross-feature flagging, VerifiedBadge assignment/revocation, high-value withdrawal threshold, group-fund withdrawal, campaign verification state machine, user KYC/compliance, top-performing travelers query.
 - **Manual API tester page** ? open question; not built, not decided either way yet.
 
+- **2026-09-16**: Removed unused `getAgency()` call from super-admin frontend (`GET /admin/agencies/:id` was not backed by a backend endpoint). Removed lint-stub test files from super-admin-panel-repo.
+
 ## Development Flow (now reflects actual practice across 5 features)
 
 `docs/DEVELOPMENT_FLOW.md` documents the standing flow: backend is Swagger ? unit ? E2E ? commit (only when explicitly asked) ? docs; mobile is screens matching figma exactly ? real TanStack Query wiring ? manual Playwright verification against the live dockerized backend ? docs. Steps 4/5 of the backend flow (deploy, blackbox-on-prod) remain deferred since no CI/CD or production environment exists yet. Flow now reflects actual practice across 6+ features.
@@ -83,6 +87,9 @@ See `docs/Veakay_TRD_Open_Questions.md` (28 items, verified line-by-line against
 1. **OTP delivery to MailHog**: OTP emails are correctly sent to MailHog (localhost:58025), not to a real SMTP inbox. `.env` had a misleading "Production SMTP (Gmail)" comment that confused the initial tester - fixed by correcting the comment. `.env.example` had duplicate `MAIL_HOST`/`MAIL_PORT` keys (production section shadowing the MailHog section) - fixed by merging into one section.
 2. **Broken trip-request migration `20260903063549`**: was a no-op (entire SQL on one comment line) - removed; the corrected `20260903070425` migration is the canonical version.
 3. **Test DB was missing all 3 trip-request migrations**: applied via `prisma migrate deploy` after verifying the test database had none of the trip-request schema changes.
+
+4. **Backend E2E tests blocked - Docker Desktop/daemon not running**: PostgreSQL, Redis, MailHog, and MinIO containers are unavailable because Docker Desktop/daemon is not running on this environment. Unit tests (`npm run test:unit`) and TypeScript build (`npm run build`) pass. E2E tests (`npm run test:e2e`) cannot run without the dockerized infrastructure.
+5. **Mobile native builds blocked on Windows**: Android SDK, JAVA_HOME, and Xcode are not available in this Windows environment. JavaScript-level checks (typecheck, lint, Expo web build) pass, but `expo run:android` and `expo run:ios` cannot execute.
 
 
 ## Resolved Blockers (2026-09-12)

@@ -14,6 +14,11 @@ import ContentPage from '@/features/content/components/ContentPage';
 import NotificationsPage from '@/features/notifications/components/NotificationsPage';
 import AuditPage from '@/features/audit/components/AuditPage';
 import SettingsPage from '@/features/settings/components/SettingsPage';
+import InvitesPage from '@/features/invites/components/InvitesPage';
+import BadgesPage from '@/features/badges/components/BadgesPage';
+import FraudPage from '@/features/fraud/components/FraudPage';
+import TopPerformersPage from '@/features/top-performers/components/TopPerformersPage';
+import AnalyticsPage from '@/features/analytics/components/AnalyticsPage';
 import NotFoundPage from '@/components/shared/NotFoundPage';
 
 function ProtectedLayout() {
@@ -39,6 +44,11 @@ function App() {
         <Route path={ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
         <Route path={ROUTES.AUDIT} element={<AuditPage />} />
         <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
+        <Route path={ROUTES.INVITES} element={<InvitesPage />} />
+        <Route path={ROUTES.BADGES} element={<BadgesPage />} />
+        <Route path={ROUTES.FRAUD} element={<FraudPage />} />
+        <Route path={ROUTES.TOP_PERFORMERS} element={<TopPerformersPage />} />
+        <Route path={ROUTES.ANALYTICS} element={<AnalyticsPage />} />
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />

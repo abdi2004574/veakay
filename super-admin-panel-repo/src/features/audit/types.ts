@@ -1,4 +1,4 @@
-import type { AuditAction } from "../../types/common";
+﻿import type { AuditAction } from "../../types/common";
 
 export interface AuditLogEntry {
   id: string;
@@ -16,6 +16,7 @@ export interface AuditLogFilters {
   action?: string;
   actorRole?: string;
   targetType?: string;
+  search?: string;
   cursor?: string;
   limit?: number;
 }

@@ -1,54 +1,51 @@
-import { useQuery } from "@tanstack/react-query";
-import { getBroadcastHistory } from "../api/notifications";
-import { Table } from "../../../components/ui/table";
-import { Badge } from "../../../components/ui/badge";
-import { Skeleton } from "../../../components/ui/skeleton";
-import type { AdminNotification } from "../types";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Inbox, Megaphone } from "lucide-react";
 
 export default function NotificationHistory() {
-  const { data, isLoading } = useQuery({
-    queryKey: ["notifications", "history"],
-    queryFn: getBroadcastHistory,
-  });
-
-  const notifications = (data?.data.data ?? []) as AdminNotification[];
-
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Notifications</h1>
-        <p className="text-muted-foreground">Broadcast history and delivery status</p>
+        <h2 className="text-xl font-semibold tracking-tight">
+          Broadcast history
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Recent announcements and delivery results
+        </p>
       </div>
-      <div className="rounded-md border border-border">
-        <Table>
-          <thead className="bg-muted/50">
-            <tr>
-              <th className="px-4 py-3 text-left text-sm font-medium">Title</th>
-              <th className="px-4 py-3 text-left text-sm font-medium">Target</th>
-              <th className="px-4 py-3 text-left text-sm font-medium">Sent At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              <tr><td colSpan={3} className="px-4 py-8"><Skeleton className="h-4 w-full" /></td></tr>
-            ) : notifications.length === 0 ? (
-              <tr><td colSpan={3} className="px-4 py-8 text-center text-muted-foreground">No broadcasts yet</td></tr>
-            ) : (
-              notifications.map((n) => (
-                <tr key={n.id} className="border-t border-border hover:bg-muted/30">
-                  <td className="px-4 py-3 text-sm font-medium">{n.title}</td>
-                  <td className="px-4 py-3 text-sm">
-                    <Badge variant="outline" className="capitalize">{n.target}</Badge>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground">
-                    {new Date(n.sentAt).toLocaleString()}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </Table>
-      </div>
+
+      <Card className="rounded-xl border border-border bg-card shadow-sm">
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+              <Megaphone className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <div className="space-y-1">
+              <CardTitle>Broadcast history unavailable</CardTitle>
+              <CardDescription>
+                This feature requires backend support for retrieving broadcast history.
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Alert variant="info">
+            <Inbox className="h-4 w-4" />
+            <AlertTitle>Not yet implemented</AlertTitle>
+            <AlertDescription className="space-y-2">
+              <p>
+                The backend currently supports sending broadcasts and previewing segment
+                reach, but does not provide an endpoint for retrieving broadcast history.
+              </p>
+              <p className="text-sm">
+                Once the backend implements <code className="font-mono text-xs bg-muted px-1 rounded">GET /admin/notifications/broadcast</code>,
+                this section will display a table of past broadcasts with delivery status,
+                recipient counts, and timestamps.
+              </p>
+            </AlertDescription>
+          </Alert>
+        </CardContent>
+      </Card>
     </div>
   );
 }

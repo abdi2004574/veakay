@@ -1,18 +1,17 @@
-import { Outlet } from 'react-router-dom';
-import Sidebar from './Sidebar';
-import Header from './Header';
-import { useUiStore } from '@/stores/ui-store';
+import { Outlet } from "react-router-dom";
+import Sidebar from "./Sidebar";
+import Header from "./Header";
 
 export default function AppShell() {
-  useUiStore();
-
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex min-h-screen bg-background">
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header />
         <main className="flex-1 overflow-y-auto">
-          <Outlet />
+          <div className="p-6">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

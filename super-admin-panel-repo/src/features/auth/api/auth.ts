@@ -14,6 +14,7 @@ export async function login(credentials: LoginCredentials): Promise<PendingTwoFa
     {
       method: 'POST',
       body: JSON.stringify(credentials),
+      skipAuth: true,
     },
   );
   return res.data;
@@ -25,6 +26,7 @@ export async function verifyTwoFactor(
   const res = await apiRequest<AuthResponse>('/admin/auth/2fa', {
     method: 'POST',
     body: JSON.stringify(credentials),
+    skipAuth: true,
   });
   return res.data;
 }

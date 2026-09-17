@@ -6,9 +6,10 @@ export async function getAuditLogs(filters?: AuditLogFilters) {
   if (filters?.action) params.action = filters.action;
   if (filters?.actorRole) params.actorRole = filters.actorRole;
   if (filters?.targetType) params.targetType = filters.targetType;
+  if (filters?.search) params.search = filters.search;
   if (filters?.cursor) params.cursor = filters.cursor;
   if (filters?.limit) params.limit = String(filters.limit);
-  return getApi<{ data: AuditLogEntry[]; meta: { cursor: string; hasMore: boolean } }>(
+  return getApi<{items: AuditLogEntry[]; nextCursor: string|null}>(
     "/admin/audit-log",
     params
   );

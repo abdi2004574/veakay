@@ -116,7 +116,7 @@ export default function TopPerformersPage() {
                       <span className="text-sm font-medium">{performer.completedTripCount}</span>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{performer.badge || "—"}</Badge>
+                      <Badge variant="secondary">{performer.badge || "â€”"}</Badge>
                     </TableCell>
                     <TableCell>
                       <span className="text-sm text-muted-foreground">{formatDate(performer.createdAt)}</span>

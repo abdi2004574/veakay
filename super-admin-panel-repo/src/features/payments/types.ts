@@ -1,16 +1,31 @@
 import type { WithdrawalStatus } from '../../types/common';
 
+export interface WithdrawalUser {
+  id: string;
+  email: string;
+  username: string;
+}
+
 export interface AdminWithdrawal {
   id: string;
   userId: string;
-  user: { email: string; displayName: string };
-  amount: number;
+  user?: WithdrawalUser;
+  campaignId: string | null;
+  payoutAccountId: string | null;
+  amount: string;
   currency: string;
   status: WithdrawalStatus;
-  campaignId?: string;
-  rejectionReason?: string;
+  highValueThreshold: string | null;
+  walletTransactionId: string | null;
+  rejectionReason: string | null;
+  refundNote: string | null;
   createdAt: string;
-  reviewedAt?: string;
+  updatedAt: string;
+}
+
+export interface WithdrawalsResponse {
+  items: AdminWithdrawal[];
+  nextCursor: string | null;
 }
 
 export interface WithdrawalFilters {

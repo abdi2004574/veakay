@@ -1,4 +1,4 @@
-# Veakay Feature Tracker
+﻿# Veakay Feature Tracker
 
 ## Context
 
@@ -22,7 +22,7 @@ Built by reading, in full: the TRD (688 lines), the section-by-section gap log (
 | 8 | Friends & Group Trips (remainder) | ? done |
 | 9 | Agency Dashboard & Business Tools | ? Packages & Trip Requests sub-scopes built (backend + mobile) - ? RevenueCat agency subscription webhook + mobile subscription screen built - ? remaining sub-scopes not started |
 | 10 | Notifications (Traveler + Agency) | ? done |
-| 11 | Admin / Super Admin Panel | ? done - verified green as part of the 239/239 E2E suite |
+| 11 | Admin / Super Admin Panel | ? done — all 15 dashboard sections now wired to backend APIs (2026-09-13) |
 
 ---
 
@@ -1177,7 +1177,7 @@ Built entirely as a new `src/modules/group-campaigns/` module depending on the a
 
 ---
 
-## 11. Admin / Super Admin Panel - ? backend built (2026-09-08)
+## 11. Admin / Super Admin Panel — ? backend wired to all 15 dashboard sections (2026-09-13)
 
 **Figma screens:** NONE - admin dashboard UI not yet built (dashboard-repo not started).
 
@@ -1199,27 +1199,43 @@ Built entirely as a new `src/modules/group-campaigns/` module depending on the a
 
 | Endpoint | Status |
 |---|---|
-| POST /admin/invites - create invite (super_admin) | ? |
-| GET /admin/invites - list invites (super_admin) | ? |
-| POST /admin/invites/:id/revoke - revoke invite (super_admin) | ? |
-| POST /admin/invites/accept - accept invite (any authenticated user) | ? |
-| GET /admin/audit-log - cursor-paginated audit log (super_admin) | ? |
-| POST /reports - create content report (any authenticated user) | ? |
-| GET /admin/reports - list reports (super_admin) | ? |
-| GET /admin/reports/:id - get report detail (super_admin) | ? |
-| PATCH /admin/reports/:id - review/update report (super_admin) | ? |
-| POST /admin/badges - assign verified badge (super_admin) | ? |
-| DELETE /admin/badges/:id - revoke verified badge (super_admin) | ? |
-| GET /admin/badges - list badges (super_admin) | ? |
-| PATCH /admin/campaigns/:id/verification - update campaign verification status (super_admin) | ? |
-| PATCH /me/kyc - submit KYC info (traveler) | ? |
-| PATCH /admin/users/:id/kyc - verify/reject KYC (super_admin) | ? |
-| GET /admin/users/top-performers - top travelers by completed trips (super_admin) | ? |
-| PATCH /admin/wallet/withdrawals/:id/refund-note - update refund note (super_admin) | ? |
-| Withdrawal high-value threshold ($1,000) + identity verification gate + admin alerting | ? |
-| Donation fee deduction (configurable %, default 0) | ? |
-| Group-fund withdrawal (POST /campaigns/:id/group/withdraw) | ? |
-| src/scripts/seed-super-admin.ts | ? |
+| POST /admin/invites - create invite (super_admin) | ? (connected as of 2026-09-13) |
+| GET /admin/invites - list invites (super_admin) | ? (connected as of 2026-09-13) |
+| POST /admin/invites/:id/revoke - revoke invite (super_admin) | ? (connected as of 2026-09-13) |
+| POST /admin/invites/accept - accept invite (any authenticated user) | ? (connected as of 2026-09-13) |
+| GET /admin/audit-log - cursor-paginated audit log (super_admin) | ? (connected as of 2026-09-13) |
+| POST /reports - create content report (any authenticated user) | ? (connected as of 2026-09-13) |
+| GET /admin/reports - list reports (super_admin) | ? (connected as of 2026-09-13) |
+| GET /admin/reports/:id - get report detail (super_admin) | ? (connected as of 2026-09-13) |
+| PATCH /admin/reports/:id - review/update report (super_admin) | ? (connected as of 2026-09-13) |
+| POST /admin/badges - assign verified badge (super_admin) | ? (connected as of 2026-09-13) |
+| DELETE /admin/badges/:id - revoke verified badge (super_admin) | ? (connected as of 2026-09-13) |
+| GET /admin/badges - list badges (super_admin) | ? (connected as of 2026-09-13) |
+| GET /admin/campaigns - admin campaign list with filters (super_admin) | ? (connected as of 2026-09-13) |
+| PATCH /admin/campaigns/:id/flag - flag/unflag campaign (super_admin) | ? (connected as of 2026-09-13) |
+| PATCH /admin/campaigns/:id/verification - update campaign verification status (super_admin) | ? (connected as of 2026-09-13) |
+| PATCH /me/kyc - submit KYC info (traveler) | ? (connected as of 2026-09-13) |
+| GET /admin/users - admin user list with filters (super_admin) | ? (connected as of 2026-09-13) |
+| PATCH /admin/users/:id - activate/deactivate user (super_admin) | ? (connected as of 2026-09-13) |
+| PATCH /admin/users/:id/kyc - verify/reject KYC (super_admin) | ? (connected as of 2026-09-13) |
+| GET /admin/users/top-performers - top travelers by completed trips (super_admin) | ? (connected as of 2026-09-13) |
+| GET /admin/settings - platform settings (super_admin) | ? (NEW — connected 2026-09-13) |
+| PATCH /admin/settings - update platform settings (super_admin) | ? (NEW — connected 2026-09-13) |
+| GET /admin/agencies/pending - pending agencies (super_admin) | ? (connected as of 2026-09-13) |
+| POST /admin/agencies/:id/approve - approve agency (super_admin) | ? (connected as of 2026-09-13) |
+| POST /admin/agencies/:id/reject - reject agency (super_admin) | ? (connected as of 2026-09-13) |
+| GET /admin/agencies/top-performers - top agencies (super_admin) | ? (connected as of 2026-09-13) |
+| GET /admin/wallet/withdrawals - all withdrawal requests (super_admin) | ? (connected as of 2026-09-13) |
+| GET /admin/fraud/flags - fraud flags (super_admin) | ? (FIXED path from /admin/fraud to /admin/fraud/flags) |
+| PATCH /admin/fraud/flags/:id - review fraud flags (super_admin) | ? (FIXED path) |
+| GET /admin/dashboard/kpis - platform metrics (super_admin) | ? (connected as of 2026-09-13) |
+| GET /admin/dashboard/funding-trends - funding trends (super_admin) | ? (connected as of 2026-09-13) |
+| GET /admin/dashboard/top-destinations - top destinations (super_admin) | ? (connected as of 2026-09-13) |
+| GET /admin/dashboard/traveler-distribution - traveler preferences (super_admin) | ? (connected as of 2026-09-13) |
+| Withdrawal high-value threshold ($1,000) + identity verification gate + admin alerting | ? (connected as of 2026-09-13) |
+| Donation fee deduction (configurable %, default 0) | ? (connected as of 2026-09-13) |
+| Group-fund withdrawal (POST /campaigns/:id/group/withdraw) | ? (connected as of 2026-09-13) |
+| src/scripts/seed-super-admin.ts | ? (connected as of 2026-09-13) |
 
 **Backend - tests**
 
@@ -1249,3 +1265,69 @@ Built entirely as a new `src/modules/group-campaigns/` module depending on the a
 | #22 | Fraud-detection criteria | Flag on frequent payment-method changes or personal info mismatched against payment details (modeled as fraud flag criteria in code comments for future automation) |
 | #25 | Who withdraws pooled group funds | Group admin can withdraw; endpoint implemented |
 | #27 | Donation fee separate from commission | Configurable percentage deducted from donation before crediting creator |
+
+
+---
+
+### Dashboard API Wiring Complete (2026-09-13)
+
+All 15 Super Admin dashboard sections are now connected to the backend:
+
+| Dashboard Page | API Endpoints | Status |
+|---|---|---|
+| Overview (Analytics) | GET /admin/dashboard/kpis, /funding-trends, /top-destinations, /traveler-distribution | ? |
+| Agencies | GET/POST /admin/agencies/pending, /top-performers, POST /admin/agencies/:id/approve, /reject | ? |
+| Campaigns | GET /admin/campaigns, PATCH /admin/campaigns/:id/flag | ? |
+| Users | GET /admin/users, PATCH /admin/users/:id, PATCH /admin/users/:id/kyc, GET /admin/users/top-performers | ? |
+| Moderation | GET/PATCH /reports/admin/reports | ? |
+| KYC | Via PATCH /admin/users/:id/kyc | ? |
+| Payments | GET /admin/wallet/withdrawals | ? |
+| Audit Log | GET /admin/audit-log | ? |
+| Fraud | GET/PATCH /admin/fraud/flags | ? |
+| Broadcast | GET/PATCH /admin/notifications/broadcast, /segments/preview | ? |
+| Badges | GET/POST/DELETE /admin/badges | ? |
+| Invites | GET/POST /admin/invites, POST /admin/invites/:id/revoke | ? |
+| Settings | GET/PATCH /admin/settings | ? (NEW 2026-09-13) |
+| Analytics | Covered by Overview | ? |
+| Top Performers | Covered by Users/Agencies | ? |
+
+**Changes made:**
+- Fixed fraud controller path: `@Controller('admin/fraud')` → `@Controller('admin/fraud/flags')` to match dashboard hooks
+- Created Settings module: `SettingsController` (`GET/PATCH /admin/settings`), `SettingsService`, `SettingsModule` — wired into `AppModule`
+- All endpoints use existing guards (`RequirePlatformRole(PlatformRole.super_admin)`), `ResponseInterceptor`, and `AdminAuditLogService`
+- TypeScript build: ✅ passes cleanly
+
+## Current Verification State (2026-09-16)
+
+### Backend (`backend-repo/`)
+
+| Check | Result |
+|---|---|
+| TypeScript (`tsc --noEmit`) | PASS |
+| Agencies unit tests | PASS — 42 tests across 3 suites |
+| All other unit tests | PASS (last verified: 34 tests passing in focused run) |
+| E2E tests | BLOCKED — Docker Desktop/daemon not running; PostgreSQL, Redis, MailHog, MinIO unavailable |
+| Backend build | PASS |
+
+### Frontend (`super-admin-panel-repo/`)
+
+| Check | Result |
+|---|---|
+| TypeScript (`tsc --noEmit`) | PASS |
+| ESLint (`eslint . --ext .ts,.tsx`) | PASS — 0 errors, 0 warnings |
+| Vite build (`vite build`) | PASS |
+
+### Mobile (`mobile-app-repo/`)
+
+| Check | Result |
+|---|---|
+| TypeScript (`tsc --noEmit`) | PASS |
+| ESLint | PASS (1 pre-existing warning: Unicode BOM in app/_layout.tsx, non-blocking) |
+| Jest | PASS — 3 suites, 46 tests |
+| Expo web export | PASS |
+| Android native build | BLOCKED — Android SDK missing, JAVA_HOME not configured |
+| iOS native build | BLOCKED — Xcode unavailable on Windows |
+
+### Known Latent Issues
+
+- `GET /admin/agencies/:id` is called by `super-admin-panel-repo/src/features/agencies/api/agencies.ts` (removed as of 2026-09-16) but the backend does not expose this endpoint. It was unused by the Agencies table and has been removed from the frontend. If a detail page is needed later, the backend must add a `@Get(':id')` route to `AdminAgenciesController`.

@@ -1,4 +1,4 @@
-import {
+﻿import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
@@ -6,9 +6,16 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { LoadingState, EmptyState } from "@/components/shared/DataState";
 import { cn } from "@/lib/utils";
 
 export interface DataTableProps<TData, TValue = unknown> {
@@ -17,6 +24,7 @@ export interface DataTableProps<TData, TValue = unknown> {
   isLoading?: boolean;
   onRowClick?: (row: TData) => void;
   pageSize?: number;
+  emptyMessage?: string;
 }
 
 export function DataTable<TData, TValue = unknown>({
@@ -25,6 +33,7 @@ export function DataTable<TData, TValue = unknown>({
   isLoading,
   onRowClick,
   pageSize = 20,
+  emptyMessage = "No results.",
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -41,83 +50,72 @@ export function DataTable<TData, TValue = unknown>({
   });
 
   if (isLoading) {
-    return (
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {columns.map((_, i) => (
-                <TableHead key={i}>
-                  <Skeleton className="h-4 w-full" />
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <TableRow key={i}>
-                {columns.map((_, j) => (
-                  <TableCell key={j}>
-                    <Skeleton className="h-4 w-full" />
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    );
+    return <LoadingState rows={5} columns={columns.length} />;
   }
 
   return (
-    <div className="overflow-x-auto">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return header.isPlaceholder ? (
-                  <TableHead key={header.id} />
-                ) : (
-                  <TableHead
-                    key={header.id}
-                    className={cn(
-                      header.column.getIsSorted() === "asc" ? "bg-muted/50" : "",
-                      "cursor-pointer",
-                    )}
-                  >
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-                onClick={() => onRowClick?.(row.original)}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
+    <div className="space-y-4">
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return header.isPlaceholder ? (
+                    <TableHead key={header.id} />
+                  ) : (
+                    <TableHead
+                      key={header.id}
+                      className={cn(
+                        header.column.getIsSorted() === "asc"
+                          ? "bg-muted/50"
+                          : "",
+                        "cursor-pointer select-none",
+                      )}
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                    </TableHead>
+                  );
+                })}
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell className="h-24 text-center" colSpan={columns.length}>
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-      <div className="flex items-center justify-end space-x-2 py-4">
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  onClick={() => onRowClick?.(row.original)}
+                  className="data-[state=selected]:bg-muted"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  className="h-24 text-center"
+                  colSpan={columns.length}
+                >
+                  <EmptyState title={emptyMessage} />
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="flex items-center justify-end space-x-2 py-2">
         <Button
           variant="outline"
           size="sm"
