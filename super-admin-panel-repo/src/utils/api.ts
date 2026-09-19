@@ -8,7 +8,7 @@ class ApiError extends Error {
   constructor(
     public code: string,
     message: string,
-    public statusCode: number
+    public statusCode: number,
   ) {
     super(message);
     this.name = "ApiError";
@@ -21,7 +21,11 @@ async function handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
     if (response.status === 204) {
       return { success: true, data: undefined as T };
     }
-    throw new ApiError("INTERNAL_ERROR", "Unexpected response format", response.status);
+    throw new ApiError(
+      "INTERNAL_ERROR",
+      "Unexpected response format",
+      response.status,
+    );
   }
 
   const body = (await response.json()) as ApiResult<T>;
@@ -39,7 +43,7 @@ export interface ApiRequestOptions extends RequestInit {
 
 export async function apiRequest<T>(
   endpoint: string,
-  options: ApiRequestOptions = {}
+  options: ApiRequestOptions = {},
 ): Promise<ApiResponse<T>> {
   const { skipAuth = false, ...fetchOptions } = options;
   const token = getToken();
@@ -57,7 +61,8 @@ export async function apiRequest<T>(
   };
 
   if (token?.accessToken) {
-    (headers as Record<string, string>)["Authorization"] = `Bearer ${token.accessToken}`;
+    (headers as Record<string, string>)["Authorization"] =
+      `Bearer ${token.accessToken}`;
   }
 
   const response = await fetch(url, {
@@ -76,12 +81,19 @@ export async function apiRequest<T>(
   return result;
 }
 
-export async function getApi<T>(endpoint: string, params?: Record<string, string>): Promise<ApiResponse<T>> {
+export async function getApi<T>(
+  endpoint: string,
+  params?: Record<string, string>,
+): Promise<ApiResponse<T>> {
   const query = params ? `?${new URLSearchParams(params).toString()}` : "";
   return apiRequest<T>(`${endpoint}${query}`, { method: "GET" });
 }
 
-export async function postApi<T>(endpoint: string, body?: unknown, skipAuth = false): Promise<ApiResponse<T>> {
+export async function postApi<T>(
+  endpoint: string,
+  body?: unknown,
+  skipAuth = false,
+): Promise<ApiResponse<T>> {
   return apiRequest<T>(endpoint, {
     method: "POST",
     body: body ? JSON.stringify(body) : undefined,
@@ -89,7 +101,10 @@ export async function postApi<T>(endpoint: string, body?: unknown, skipAuth = fa
   });
 }
 
-export async function patchApi<T>(endpoint: string, body?: unknown): Promise<ApiResponse<T>> {
+export async function patchApi<T>(
+  endpoint: string,
+  body?: unknown,
+): Promise<ApiResponse<T>> {
   return apiRequest<T>(endpoint, {
     method: "PATCH",
     body: body ? JSON.stringify(body) : undefined,
@@ -100,7 +115,9 @@ export async function deleteApi<T>(endpoint: string): Promise<ApiResponse<T>> {
   return apiRequest<T>(endpoint, { method: "DELETE" });
 }
 
-export function parseCursorMeta(headers: Headers): { cursor: string; hasMore: boolean } | null {
+export function parseCursorMeta(
+  headers: Headers,
+): { cursor: string; hasMore: boolean } | null {
   const cursor = headers.get("X-Next-Cursor");
   const hasMore = headers.get("X-Has-More") === "true";
   if (!cursor) return null;

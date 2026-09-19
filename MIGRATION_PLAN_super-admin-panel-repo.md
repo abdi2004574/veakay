@@ -1,4 +1,4 @@
-﻿# Migration Plan: super-admin-panel-repo as Canonical Admin Frontend
+# Migration Plan: super-admin-panel-repo as Canonical Admin Frontend
 
 **Status:** READ-ONLY PLAN -- No implementation, no file edits
 **Date:** 2026-09-10

@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useBadgesList } from "../hooks/use-badges-queries";
 import { useRevokeBadge } from "../hooks/use-badges-mutations";
 import type { VerifiedBadge, VerifiedBadgeSubjectType } from "../types";
@@ -55,7 +55,9 @@ function getSubjectIcon(subjectType: VerifiedBadgeSubjectType) {
 export default function BadgesTable() {
   const [search, setSearch] = useState("");
   const [subjectFilter, setSubjectFilter] = useState<SubjectFilter>("all");
-  const [badgeToRevoke, setBadgeToRevoke] = useState<VerifiedBadge | null>(null);
+  const [badgeToRevoke, setBadgeToRevoke] = useState<VerifiedBadge | null>(
+    null,
+  );
   const { data, isLoading, isError, error, refetch } = useBadgesList();
   const revokeMutation = useRevokeBadge();
   const badges = data?.data ?? [];
@@ -183,8 +185,12 @@ export default function BadgesTable() {
               <TableRow>
                 <TableCell colSpan={7} className="px-4 py-8">
                   <EmptyState
-                    icon={<Award className="h-6 w-6 text-[var(--vaykae-pink)]" />}
-                    title={hasFilters ? "No matching badges" : "No verified badges"}
+                    icon={
+                      <Award className="h-6 w-6 text-[var(--vaykae-pink)]" />
+                    }
+                    title={
+                      hasFilters ? "No matching badges" : "No verified badges"
+                    }
                     description={
                       hasFilters
                         ? "Try changing your search or subject filter."
@@ -223,7 +229,10 @@ export default function BadgesTable() {
                       </Badge>
                     </TableCell>
                     <TableCell className="px-4 py-3 text-sm text-muted-foreground">
-                      <span className="truncate font-mono text-xs" title={badge.assignedById}>
+                      <span
+                        className="truncate font-mono text-xs"
+                        title={badge.assignedById}
+                      >
                         {badge.assignedById}
                       </span>
                     </TableCell>
@@ -235,7 +244,12 @@ export default function BadgesTable() {
                     </TableCell>
                     <TableCell className="px-4 py-3 text-right">
                       {badge.revokedAt ? (
-                        <Button type="button" variant="ghost" size="sm" disabled>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          disabled
+                        >
                           Revoked
                         </Button>
                       ) : (

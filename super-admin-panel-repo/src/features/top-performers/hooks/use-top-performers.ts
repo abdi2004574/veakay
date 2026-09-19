@@ -1,5 +1,8 @@
-﻿import { useQuery } from "@tanstack/react-query";
-import { getTopPerformingTravelers, getTopPerformingAgencies } from "../api/top-performers";
+import { useQuery } from "@tanstack/react-query";
+import {
+  getTopPerformingTravelers,
+  getTopPerformingAgencies,
+} from "../api/top-performers";
 
 export function useTopPerformingTravelers() {
   return useQuery({

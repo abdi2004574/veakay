@@ -11,30 +11,32 @@ export function useCreateInviteMutation() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  return useMutation<CreateInviteMutationResult, Error, CreateAdminInviteInput>({
-    mutationFn: async (input) => {
-      const response = await createInvite(input);
-      return {
-        invite: response.data.invite,
-        acceptUrl: response.data.acceptUrl,
-      };
+  return useMutation<CreateInviteMutationResult, Error, CreateAdminInviteInput>(
+    {
+      mutationFn: async (input) => {
+        const response = await createInvite(input);
+        return {
+          invite: response.data.invite,
+          acceptUrl: response.data.acceptUrl,
+        };
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: INVITES_QUERY_KEY });
+        toast({
+          title: "Invite created",
+          description: "The invitation email has been sent.",
+          variant: "success",
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Unable to create invite",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: INVITES_QUERY_KEY });
-      toast({
-        title: "Invite created",
-        description: "The invitation email has been sent.",
-        variant: "success",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Unable to create invite",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+  );
 }
 
 export function useRevokeInviteMutation() {

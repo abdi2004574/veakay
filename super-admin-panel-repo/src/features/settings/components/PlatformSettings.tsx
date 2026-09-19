@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   usePlatformSettings,
   useUpdatePlatformSettings,
@@ -59,9 +59,7 @@ function SettingRow({
         </Badge>
       </div>
       {setting.description && (
-        <p className="text-sm text-muted-foreground">
-          {setting.description}
-        </p>
+        <p className="text-sm text-muted-foreground">{setting.description}</p>
       )}
       {isBool ? (
         <Switch
@@ -97,8 +95,7 @@ function SettingRow({
 }
 
 export default function PlatformSettings() {
-  const { data, isLoading, isError, error, refetch } =
-    usePlatformSettings();
+  const { data, isLoading, isError, error, refetch } = usePlatformSettings();
   const update = useUpdatePlatformSettings();
   const [draft, setDraft] = useState<Record<string, JsonValue>>({});
 
@@ -111,9 +108,7 @@ export default function PlatformSettings() {
       list.push(s);
       map.set(s.category, list);
     }
-    return Array.from(map.entries()).sort(([a], [b]) =>
-      a.localeCompare(b),
-    );
+    return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
   }, [settings]);
 
   const currentValue = (setting: PlatformSetting): JsonValue =>
@@ -173,7 +168,10 @@ export default function PlatformSettings() {
   return (
     <div className="space-y-6">
       {grouped.map(([category, items]) => (
-        <Card key={category} className="rounded-xl border border-border bg-card shadow-sm">
+        <Card
+          key={category}
+          className="rounded-xl border border-border bg-card shadow-sm"
+        >
           <CardHeader>
             <CardTitle className="capitalize">{category}</CardTitle>
           </CardHeader>

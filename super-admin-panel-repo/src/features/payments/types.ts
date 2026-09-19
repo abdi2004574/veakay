@@ -1,4 +1,4 @@
-import type { WithdrawalStatus } from '../../types/common';
+import type { WithdrawalStatus } from "../../types/common";
 
 export interface WithdrawalUser {
   id: string;

@@ -69,12 +69,16 @@ export function Toaster() {
           key={t.id}
           className="group pointer-events-auto relative flex w-full max-w-[400px] items-start gap-3 overflow-hidden rounded-md border p-4 pr-12 shadow-lg bg-background text-foreground"
           onAnimationEnd={() => {
-            state = { toasts: state.toasts.filter((toast) => toast.id !== t.id) };
+            state = {
+              toasts: state.toasts.filter((toast) => toast.id !== t.id),
+            };
             listeners.forEach((l) => l(state));
           }}
         >
           {t.title && <div className="text-sm font-semibold">{t.title}</div>}
-          {t.description && <div className="text-sm opacity-90">{t.description}</div>}
+          {t.description && (
+            <div className="text-sm opacity-90">{t.description}</div>
+          )}
           {t.actionLabel && t.onAction && (
             <button
               className="absolute right-2 top-2 rounded-md px-2 py-1 text-xs font-medium hover:underline"
@@ -86,11 +90,23 @@ export function Toaster() {
           <button
             className="absolute right-2 top-2 rounded-md p-1 text-foreground/50 hover:text-foreground"
             onClick={() => {
-              state = { toasts: state.toasts.filter((toast) => toast.id !== t.id) };
+              state = {
+                toasts: state.toasts.filter((toast) => toast.id !== t.id),
+              };
               listeners.forEach((l) => l(state));
             }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>

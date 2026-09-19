@@ -8,6 +8,8 @@ export function requireAuth(): void {
   }
 }
 
-export function getTokenExpiry(token: { accessToken: string; expiresAt: number } | null): number {
+export function getTokenExpiry(
+  token: { accessToken: string; expiresAt: number } | null,
+): number {
   return token?.expiresAt ?? 0;
 }

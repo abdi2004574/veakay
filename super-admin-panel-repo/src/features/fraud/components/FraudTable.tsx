@@ -52,12 +52,24 @@ interface FraudTableProps {
 
 export default function FraudTable({ onReview }: FraudTableProps) {
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
-  const [severityFilter, setSeverityFilter] = useState<string | undefined>(undefined);
+  const [statusFilter, setStatusFilter] = useState<string | undefined>(
+    undefined,
+  );
+  const [severityFilter, setSeverityFilter] = useState<string | undefined>(
+    undefined,
+  );
   const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
 
   const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: [FRAUD_FLAGS_QUERY_KEY, { status: statusFilter, severity: severityFilter, type: typeFilter, search }],
+    queryKey: [
+      FRAUD_FLAGS_QUERY_KEY,
+      {
+        status: statusFilter,
+        severity: severityFilter,
+        type: typeFilter,
+        search,
+      },
+    ],
     queryFn: () =>
       getFraudFlags({
         status: statusFilter as FraudFlag["status"],
@@ -85,7 +97,9 @@ export default function FraudTable({ onReview }: FraudTableProps) {
       <div className="flex flex-wrap items-center gap-3">
         <Select
           value={statusFilter ?? ""}
-          onValueChange={(v) => setStatusFilter(v === "" ? undefined : v as FraudFlag["status"])}
+          onValueChange={(v) =>
+            setStatusFilter(v === "" ? undefined : (v as FraudFlag["status"]))
+          }
         >
           <SelectTrigger className="w-40">
             <SelectValue placeholder="All Statuses" />
@@ -100,7 +114,11 @@ export default function FraudTable({ onReview }: FraudTableProps) {
         </Select>
         <Select
           value={severityFilter ?? ""}
-          onValueChange={(v) => setSeverityFilter(v === "" ? undefined : v as FraudFlag["severity"])}
+          onValueChange={(v) =>
+            setSeverityFilter(
+              v === "" ? undefined : (v as FraudFlag["severity"]),
+            )
+          }
         >
           <SelectTrigger className="w-40">
             <SelectValue placeholder="All Severity" />
@@ -115,17 +133,27 @@ export default function FraudTable({ onReview }: FraudTableProps) {
         </Select>
         <Select
           value={typeFilter ?? ""}
-          onValueChange={(v) => setTypeFilter(v === "" ? undefined : v as FraudFlag["type"])}
+          onValueChange={(v) =>
+            setTypeFilter(v === "" ? undefined : (v as FraudFlag["type"]))
+          }
         >
           <SelectTrigger className="w-52">
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="">All Types</SelectItem>
-            <SelectItem value="frequent_profile_changes">Frequent Profile Changes</SelectItem>
-            <SelectItem value="payment_method_mismatch">Payment Method Mismatch</SelectItem>
-            <SelectItem value="withdrawal_anomaly">Withdrawal Anomaly</SelectItem>
-            <SelectItem value="personal_info_mismatch">Personal Info Mismatch</SelectItem>
+            <SelectItem value="frequent_profile_changes">
+              Frequent Profile Changes
+            </SelectItem>
+            <SelectItem value="payment_method_mismatch">
+              Payment Method Mismatch
+            </SelectItem>
+            <SelectItem value="withdrawal_anomaly">
+              Withdrawal Anomaly
+            </SelectItem>
+            <SelectItem value="personal_info_mismatch">
+              Personal Info Mismatch
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -133,13 +161,27 @@ export default function FraudTable({ onReview }: FraudTableProps) {
         <Table>
           <TableHeader className="bg-muted/50">
             <TableRow>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium">User</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium">Type</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium">Severity</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium">Status</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium">Description</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium">Created</TableHead>
-              <TableHead className="px-4 py-3 text-right text-sm font-medium">Actions</TableHead>
+              <TableHead className="px-4 py-3 text-left text-sm font-medium">
+                User
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-sm font-medium">
+                Type
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-sm font-medium">
+                Severity
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-sm font-medium">
+                Status
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-sm font-medium">
+                Description
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-sm font-medium">
+                Created
+              </TableHead>
+              <TableHead className="px-4 py-3 text-right text-sm font-medium">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -155,21 +197,34 @@ export default function FraudTable({ onReview }: FraudTableProps) {
                   <div className="flex flex-col items-center gap-2">
                     <AlertTriangle className="h-8 w-8 text-destructive" />
                     <p className="text-sm text-muted-foreground">
-                      {(error as Error)?.message ?? "Failed to load fraud flags"}
+                      {(error as Error)?.message ??
+                        "Failed to load fraud flags"}
                     </p>
-                    <Button variant="outline" size="sm" onClick={() => refetch()}>Retry</Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => refetch()}
+                    >
+                      Retry
+                    </Button>
                   </div>
                 </TableCell>
               </TableRow>
             ) : flags.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
+                <TableCell
+                  colSpan={7}
+                  className="px-4 py-8 text-center text-muted-foreground"
+                >
                   No fraud flags found
                 </TableCell>
               </TableRow>
             ) : (
               flags.map((flag) => (
-                <TableRow key={flag.id} className="border-t border-border hover:bg-muted/30">
+                <TableRow
+                  key={flag.id}
+                  className="border-t border-border hover:bg-muted/30"
+                >
                   <TableCell className="px-4 py-3 text-sm">
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4 text-muted-foreground" />
@@ -177,13 +232,19 @@ export default function FraudTable({ onReview }: FraudTableProps) {
                     </div>
                   </TableCell>
                   <TableCell className="px-4 py-3 text-sm">
-                    <Badge variant="secondary">{typeLabels[flag.type] ?? flag.type}</Badge>
+                    <Badge variant="secondary">
+                      {typeLabels[flag.type] ?? flag.type}
+                    </Badge>
                   </TableCell>
                   <TableCell className="px-4 py-3 text-sm">
-                    <Badge variant={severityVariant[flag.severity]}>{flag.severity}</Badge>
+                    <Badge variant={severityVariant[flag.severity]}>
+                      {flag.severity}
+                    </Badge>
                   </TableCell>
                   <TableCell className="px-4 py-3 text-sm">
-                    <Badge variant={statusVariant[flag.status]}>{flag.status}</Badge>
+                    <Badge variant={statusVariant[flag.status]}>
+                      {flag.status}
+                    </Badge>
                   </TableCell>
                   <TableCell className="px-4 py-3 text-sm text-muted-foreground truncate max-w-xs">
                     {flag.description}
@@ -192,7 +253,11 @@ export default function FraudTable({ onReview }: FraudTableProps) {
                     {new Date(flag.createdAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="px-4 py-3 text-sm text-right">
-                    <Button variant="outline" size="sm" onClick={() => onReview(flag)}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onReview(flag)}
+                    >
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </TableCell>

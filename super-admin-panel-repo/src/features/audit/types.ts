@@ -1,4 +1,4 @@
-﻿import type { AuditAction } from "../../types/common";
+import type { AuditAction } from "../../types/common";
 
 export interface AuditLogEntry {
   id: string;

@@ -23,7 +23,11 @@ export interface AgencyDocument {
 
 export interface AgencyDetail extends AdminAgency {
   documents: AgencyDocument[];
-  stats: { totalPackages: number; totalRequests: number; totalBookings: number };
+  stats: {
+    totalPackages: number;
+    totalRequests: number;
+    totalBookings: number;
+  };
 }
 
 export interface AgencyFilters {

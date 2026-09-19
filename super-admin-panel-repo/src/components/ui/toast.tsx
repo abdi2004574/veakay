@@ -1,29 +1,29 @@
-import * as React from 'react';
-import * as ToastPrimitive from '@radix-ui/react-toast';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
+import * as React from "react";
+import * as ToastPrimitive from "@radix-ui/react-toast";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 
 const toastVariants = cva(
   cn(
-    'group pointer-events-auto relative flex w-full max-w-[400px] items-start gap-3',
-    'overflow-hidden rounded-md border p-4 pr-12 shadow-lg',
-    'data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)]',
-    'data-[swipe=move]:translate-y-[var(--radix-toast-swipe-move-y)]',
-    'data-[swipe=move]:rotate-[var(--radix-toast-swipe-rotate)]',
-    'data-[state=open]:animate-in data-[state=closed]:animate-out',
-    'data-[swipe=end]:slide-out-to-right',
-    'data-[state=open]:slide-in-from-top-full',
+    "group pointer-events-auto relative flex w-full max-w-[400px] items-start gap-3",
+    "overflow-hidden rounded-md border p-4 pr-12 shadow-lg",
+    "data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)]",
+    "data-[swipe=move]:translate-y-[var(--radix-toast-swipe-move-y)]",
+    "data-[swipe=move]:rotate-[var(--radix-toast-swipe-rotate)]",
+    "data-[state=open]:animate-in data-[state=closed]:animate-out",
+    "data-[swipe=end]:slide-out-to-right",
+    "data-[state=open]:slide-in-from-top-full",
   ),
   {
     variants: {
       variant: {
-        default: 'border bg-background text-foreground',
-        destructive: 'border-destructive bg-destructive/10 text-destructive',
-        success: 'border-success/50 bg-success/10 text-success-foreground',
+        default: "border bg-background text-foreground",
+        destructive: "border-destructive bg-destructive/10 text-destructive",
+        success: "border-success/50 bg-success/10 text-success-foreground",
       },
     },
     defaultVariants: {
-      variant: 'default',
+      variant: "default",
     },
   },
 );
@@ -37,8 +37,8 @@ const ToastViewport = React.forwardRef<
   <ToastPrimitive.Viewport
     ref={ref}
     className={cn(
-      'fixed bottom-0 z-50 flex max-h-screen w-full flex-col-reverse gap-2 p-4',
-      'bottom-0 right-4 top-auto',
+      "fixed bottom-0 z-50 flex max-h-screen w-full flex-col-reverse gap-2 p-4",
+      "bottom-0 right-4 top-auto",
       className,
     )}
     {...props}
@@ -68,10 +68,10 @@ const ToastAction = React.forwardRef<
   <ToastPrimitive.Action
     ref={ref}
     className={cn(
-      'inline-flex h-8 items-center justify-center rounded-md border bg-secondary px-3 text-xs font-medium',
-      'transition-colors hover:bg-secondary/80 focus-visible:outline-none',
-      'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-      'disabled:pointer-events-none disabled:opacity-50',
+      "inline-flex h-8 items-center justify-center rounded-md border bg-secondary px-3 text-xs font-medium",
+      "transition-colors hover:bg-secondary/80 focus-visible:outline-none",
+      "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+      "disabled:pointer-events-none disabled:opacity-50",
       className,
     )}
     {...props}
@@ -86,9 +86,9 @@ const ToastClose = React.forwardRef<
   <ToastPrimitive.Close
     ref={ref}
     className={cn(
-      'absolute right-2 top-2 rounded-md p-1 text-foreground/50',
-      'hover:text-foreground focus-visible:outline-none focus-visible:ring-2',
-      'focus-visible:ring-ring focus-visible:ring-offset-2',
+      "absolute right-2 top-2 rounded-md p-1 text-foreground/50",
+      "hover:text-foreground focus-visible:outline-none focus-visible:ring-2",
+      "focus-visible:ring-ring focus-visible:ring-offset-2",
       className,
     )}
     {...props}
@@ -104,7 +104,7 @@ const ToastTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ToastPrimitive.Title
     ref={ref}
-    className={cn('text-sm font-semibold', className)}
+    className={cn("text-sm font-semibold", className)}
     {...props}
   />
 ));
@@ -116,7 +116,7 @@ const ToastDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ToastPrimitive.Description
     ref={ref}
-    className={cn('text-sm opacity-90', className)}
+    className={cn("text-sm opacity-90", className)}
     {...props}
   />
 ));
@@ -134,4 +134,6 @@ export {
 };
 
 export type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>;
-export type ToastActionProps = React.ComponentPropsWithoutRef<typeof ToastAction>;
+export type ToastActionProps = React.ComponentPropsWithoutRef<
+  typeof ToastAction
+>;

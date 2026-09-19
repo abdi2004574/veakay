@@ -1,9 +1,22 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getReports, resolveReport } from "../api/content";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useToast } from "@/hooks/use-toast";
@@ -15,30 +28,57 @@ export default function ModerationQueue() {
   const [statusFilter, setStatusFilter] = useState<string>("pending");
   const [actionDialogOpen, setActionDialogOpen] = useState(false);
   const [actionReportId, setActionReportId] = useState<string | null>(null);
-  const [actionType, setActionType] = useState<"dismissed" | "actioned">("actioned");
+  const [actionType, setActionType] = useState<"dismissed" | "actioned">(
+    "actioned",
+  );
   const qc = useQueryClient();
   const { toast } = useToast();
 
   const { data, isLoading } = useQuery({
     queryKey: ["reports", statusFilter],
-    queryFn: () => getReports(statusFilter ? { status: statusFilter as "pending" | "reviewed" | "actioned" | "dismissed" } : undefined),
+    queryFn: () =>
+      getReports(
+        statusFilter
+          ? {
+              status: statusFilter as
+                "pending" | "reviewed" | "actioned" | "dismissed",
+            }
+          : undefined,
+      ),
   });
 
   const resolve = useMutation({
-    mutationFn: ({ id, action, note }: { id: string; action: "dismissed" | "actioned"; note?: string }) =>
-      resolveReport(id, action, note),
+    mutationFn: ({
+      id,
+      action,
+      note,
+    }: {
+      id: string;
+      action: "dismissed" | "actioned";
+      note?: string;
+    }) => resolveReport(id, action, note),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["reports"] });
-      toast({ title: "Report updated", description: "The report has been resolved." });
+      toast({
+        title: "Report updated",
+        description: "The report has been resolved.",
+      });
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to update report.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to update report.",
+        variant: "destructive",
+      });
     },
   });
 
   const reports = (data?.data.items ?? []) as ContentReport[];
 
-  const handleActionClick = (reportId: string, type: "dismissed" | "actioned") => {
+  const handleActionClick = (
+    reportId: string,
+    type: "dismissed" | "actioned",
+  ) => {
     if (type === "dismissed") {
       resolve.mutate({ id: reportId, action: "dismissed" });
     } else {
@@ -58,8 +98,12 @@ export default function ModerationQueue() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Content Moderation</h1>
-          <p className="text-muted-foreground">Review and act on reported content</p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Content Moderation
+          </h1>
+          <p className="text-muted-foreground">
+            Review and act on reported content
+          </p>
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[200px] rounded-2xl border border-border bg-[var(--input-background)] px-3 py-2 text-sm">
@@ -78,31 +122,62 @@ export default function ModerationQueue() {
         <Table>
           <TableHeader className="bg-muted/50">
             <TableRow>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium">Type</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium">Target ID</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium">Reason</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium">Status</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium">Reported</TableHead>
-              <TableHead className="px-4 py-3 text-left text-sm font-medium">Actions</TableHead>
+              <TableHead className="px-4 py-3 text-left text-sm font-medium">
+                Type
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-sm font-medium">
+                Target ID
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-sm font-medium">
+                Reason
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-sm font-medium">
+                Status
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-sm font-medium">
+                Reported
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-sm font-medium">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={6} className="px-4 py-8 text-center text-muted-foreground">Loading...</TableCell>
+                <TableCell
+                  colSpan={6}
+                  className="px-4 py-8 text-center text-muted-foreground"
+                >
+                  Loading...
+                </TableCell>
               </TableRow>
             ) : reports.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="px-4 py-8 text-center text-muted-foreground">No reports found</TableCell>
+                <TableCell
+                  colSpan={6}
+                  className="px-4 py-8 text-center text-muted-foreground"
+                >
+                  No reports found
+                </TableCell>
               </TableRow>
             ) : (
               reports.map((report) => (
-                <TableRow key={report.id} className="border-t border-border hover:bg-muted/30">
+                <TableRow
+                  key={report.id}
+                  className="border-t border-border hover:bg-muted/30"
+                >
                   <TableCell className="px-4 py-3 text-sm">
-                    <Badge variant="outline" className="capitalize">{report.targetType}</Badge>
+                    <Badge variant="outline" className="capitalize">
+                      {report.targetType}
+                    </Badge>
                   </TableCell>
-                  <TableCell className="px-4 py-3 text-sm font-mono">{report.targetId.slice(0, 8)}...</TableCell>
-                  <TableCell className="px-4 py-3 text-sm text-muted-foreground">{report.reason}</TableCell>
+                  <TableCell className="px-4 py-3 text-sm font-mono">
+                    {report.targetId.slice(0, 8)}...
+                  </TableCell>
+                  <TableCell className="px-4 py-3 text-sm text-muted-foreground">
+                    {report.reason}
+                  </TableCell>
                   <TableCell className="px-4 py-3 text-sm">
                     <StatusBadge status={report.status} />
                   </TableCell>
@@ -116,7 +191,9 @@ export default function ModerationQueue() {
                           size="sm"
                           variant="outline"
                           className="h-8 border-emerald-500 text-emerald-600 hover:bg-emerald-50"
-                          onClick={() => handleActionClick(report.id, "dismissed")}
+                          onClick={() =>
+                            handleActionClick(report.id, "dismissed")
+                          }
                         >
                           <Check className="h-4 w-4" />
                         </Button>
@@ -124,7 +201,9 @@ export default function ModerationQueue() {
                           size="sm"
                           variant="outline"
                           className="h-8 border-rose-500 text-rose-600 hover:bg-rose-50"
-                          onClick={() => handleActionClick(report.id, "actioned")}
+                          onClick={() =>
+                            handleActionClick(report.id, "actioned")
+                          }
                         >
                           <X className="h-4 w-4" />
                         </Button>

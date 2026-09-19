@@ -1,10 +1,10 @@
-import { getApi, patchApi } from '../../../utils/api';
+import { getApi, patchApi } from "../../../utils/api";
 import type {
   AdminWithdrawal,
   PaymentStats,
   WithdrawalFilters,
   WithdrawalsResponse,
-} from '../types';
+} from "../types";
 
 export async function getWithdrawals(filters?: WithdrawalFilters) {
   const params: Record<string, string> = {};
@@ -12,12 +12,12 @@ export async function getWithdrawals(filters?: WithdrawalFilters) {
   if (filters?.cursor) params.cursor = filters.cursor;
   if (filters?.limit) params.limit = String(filters.limit);
 
-  return getApi<WithdrawalsResponse>('/admin/wallet/withdrawals', params);
+  return getApi<WithdrawalsResponse>("/admin/wallet/withdrawals", params);
 }
 
 export async function reviewWithdrawal(
   withdrawalId: string,
-  decision: 'approved' | 'rejected',
+  decision: "approved" | "rejected",
   reason?: string,
 ) {
   return patchApi<AdminWithdrawal>(
@@ -27,5 +27,5 @@ export async function reviewWithdrawal(
 }
 
 export async function getPaymentStats() {
-  return getApi<PaymentStats>('/admin/dashboard/payment-stats');
+  return getApi<PaymentStats>("/admin/dashboard/payment-stats");
 }

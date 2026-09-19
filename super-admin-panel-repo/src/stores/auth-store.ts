@@ -1,6 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { getToken, setToken, removeToken, isTokenExpired } from "../lib/auth-client";
+import {
+  getToken,
+  setToken,
+  removeToken,
+  isTokenExpired,
+} from "../lib/auth-client";
 import type { UserRole } from "../types/common";
 
 export interface User {
@@ -19,7 +24,10 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
 
-  setAuth: (user: User, token: { accessToken: string; expiresAt: number }) => void;
+  setAuth: (
+    user: User,
+    token: { accessToken: string; expiresAt: number },
+  ) => void;
   logout: () => void;
   hydrate: () => Promise<void>;
   clearError: () => void;
@@ -60,7 +68,12 @@ export const useAuthStore = create<AuthState>()(
         const token = getToken();
         if (!token || isTokenExpired(token)) {
           removeToken();
-          set({ isLoading: false, isAuthenticated: false, user: null, accessToken: null });
+          set({
+            isLoading: false,
+            isAuthenticated: false,
+            user: null,
+            accessToken: null,
+          });
           return;
         }
         // Token exists and is valid - we will fetch user from /me on first protected route
@@ -81,6 +94,6 @@ export const useAuthStore = create<AuthState>()(
         accessToken: state.accessToken,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
-  )
+    },
+  ),
 );

@@ -1,4 +1,4 @@
-﻿import { getApi, patchApi } from "../../../utils/api";
+import { getApi, patchApi } from "../../../utils/api";
 import type {
   AdminProfile,
   NotificationPreference,
@@ -10,7 +10,10 @@ export async function getAdminProfile() {
   return getApi<AdminProfile>("/me");
 }
 
-export async function updateAdminProfile(data: { displayName?: string; username?: string }) {
+export async function updateAdminProfile(data: {
+  displayName?: string;
+  username?: string;
+}) {
   return patchApi<AdminProfile>("/me/profile", data);
 }
 

@@ -8,10 +8,7 @@ export async function getUsers(filters?: UserFilters) {
   if (filters?.status) params.status = filters.status;
   if (filters?.cursor) params.cursor = filters.cursor;
   if (filters?.limit) params.limit = String(filters.limit);
-  return getApi<AdminUser[]>(
-    "/admin/users",
-    params
-  );
+  return getApi<AdminUser[]>("/admin/users", params);
 }
 
 export async function getUser(userId: string) {

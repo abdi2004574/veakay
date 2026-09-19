@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom';
-import { Home, AlertCircle } from 'lucide-react';
-import { ROUTES } from '@/lib/constants';
+import { Link } from "react-router-dom";
+import { Home, AlertCircle } from "lucide-react";
+import { ROUTES } from "@/lib/constants";
 
 export default function NotFoundPage() {
   return (

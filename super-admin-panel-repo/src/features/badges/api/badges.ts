@@ -1,4 +1,4 @@
-﻿import { deleteApi, getApi, postApi } from "../../../utils/api";
+import { deleteApi, getApi, postApi } from "../../../utils/api";
 import type { AssignBadgeRequest, VerifiedBadge } from "../types";
 
 export async function getBadges() {

@@ -8,11 +8,7 @@ import {
   X,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { GradientButton } from "@/components/ui/gradient-button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -29,11 +25,12 @@ import StatusBadge from "@/components/shared/StatusBadge";
 import { useToast } from "@/hooks/use-toast";
 import { formatCurrency } from "@/lib/utils";
 import type { WithdrawalStatus } from "@/types/common";
-import { getPaymentStats, getWithdrawals, reviewWithdrawal } from "../api/payments";
-import type {
-  AdminWithdrawal,
-  PaymentStats,
-} from "../types";
+import {
+  getPaymentStats,
+  getWithdrawals,
+  reviewWithdrawal,
+} from "../api/payments";
+import type { AdminWithdrawal, PaymentStats } from "../types";
 
 type ReviewInput = {
   id: string;
@@ -71,13 +68,7 @@ function StatCard({
 }
 
 function PaymentStatsDisplay() {
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["payment-stats"],
     queryFn: getPaymentStats,
   });
@@ -144,7 +135,10 @@ function PaymentStatsDisplay() {
 
 function PaymentStatsGrid({ stats }: { stats: PaymentStats }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-live="polite">
+    <div
+      className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+      aria-live="polite"
+    >
       <StatCard
         label="Total withdrawn"
         value={formatCurrency(stats.totalWithdrawn)}

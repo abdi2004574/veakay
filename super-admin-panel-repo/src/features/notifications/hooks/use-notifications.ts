@@ -1,9 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import {
-  getSegmentPreview,
-  sendBroadcast,
-} from "../api/notifications";
+import { getSegmentPreview, sendBroadcast } from "../api/notifications";
 import type { BroadcastPayload, SegmentPreviewFilters } from "../types";
 
 export const NOTIFICATIONS_QUERY_KEYS = {

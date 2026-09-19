@@ -1,4 +1,4 @@
-﻿import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import {
   getAdminProfile,
@@ -90,7 +90,8 @@ export function useUpdatePlatformSettings() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: (request: UpdateSettingsRequest) => updatePlatformSettings(request),
+    mutationFn: (request: UpdateSettingsRequest) =>
+      updatePlatformSettings(request),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: SETTINGS_QUERY_KEYS.platformSettings,

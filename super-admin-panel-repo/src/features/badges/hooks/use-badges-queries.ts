@@ -1,4 +1,4 @@
-﻿import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { getBadges } from "../api/badges";
 
 export const BADGES_QUERY_KEY = ["admin", "badges"] as const;

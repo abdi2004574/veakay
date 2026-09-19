@@ -1,4 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Inbox, Megaphone } from "lucide-react";
 
@@ -23,7 +29,8 @@ export default function NotificationHistory() {
             <div className="space-y-1">
               <CardTitle>Broadcast history unavailable</CardTitle>
               <CardDescription>
-                This feature requires backend support for retrieving broadcast history.
+                This feature requires backend support for retrieving broadcast
+                history.
               </CardDescription>
             </div>
           </div>
@@ -34,13 +41,17 @@ export default function NotificationHistory() {
             <AlertTitle>Not yet implemented</AlertTitle>
             <AlertDescription className="space-y-2">
               <p>
-                The backend currently supports sending broadcasts and previewing segment
-                reach, but does not provide an endpoint for retrieving broadcast history.
+                The backend currently supports sending broadcasts and previewing
+                segment reach, but does not provide an endpoint for retrieving
+                broadcast history.
               </p>
               <p className="text-sm">
-                Once the backend implements <code className="font-mono text-xs bg-muted px-1 rounded">GET /admin/notifications/broadcast</code>,
-                this section will display a table of past broadcasts with delivery status,
-                recipient counts, and timestamps.
+                Once the backend implements{" "}
+                <code className="font-mono text-xs bg-muted px-1 rounded">
+                  GET /admin/notifications/broadcast
+                </code>
+                , this section will display a table of past broadcasts with
+                delivery status, recipient counts, and timestamps.
               </p>
             </AlertDescription>
           </Alert>

@@ -2,13 +2,26 @@ export type UserRole = "traveler" | "agency" | "admin" | "super_admin";
 
 export type AgencyStatus = "pending_verification" | "approved" | "rejected";
 
-export type CampaignStatus = "draft" | "active" | "funded" | "booked" | "completed" | "canceled" | "expired";
+export type CampaignStatus =
+  | "draft"
+  | "active"
+  | "funded"
+  | "booked"
+  | "completed"
+  | "canceled"
+  | "expired";
 
 export type CampaignPrivacy = "public" | "invite_only";
 
 export type PackageStatus = "active" | "inactive" | "archived";
 
-export type TripRequestStatus = "pending" | "in_discussion" | "confirmed" | "completed" | "declined" | "cancelled";
+export type TripRequestStatus =
+  | "pending"
+  | "in_discussion"
+  | "confirmed"
+  | "completed"
+  | "declined"
+  | "cancelled";
 
 export type WithdrawalStatus = "requested" | "approved" | "rejected" | "paid";
 

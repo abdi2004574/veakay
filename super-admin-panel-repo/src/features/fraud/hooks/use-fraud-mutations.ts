@@ -27,7 +27,10 @@ export function useReviewFraudFlag() {
       toast({ description: "Fraud flag updated." });
     },
     onError: () => {
-      toast({ description: "Failed to update fraud flag.", variant: "destructive" });
+      toast({
+        description: "Failed to update fraud flag.",
+        variant: "destructive",
+      });
     },
   });
 }

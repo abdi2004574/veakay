@@ -1,4 +1,4 @@
-﻿import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { assignBadge, revokeBadge } from "../api/badges";
 import { BADGES_QUERY_KEY } from "./use-badges-queries";

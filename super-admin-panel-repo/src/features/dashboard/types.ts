@@ -6,6 +6,15 @@ export interface DashboardMetrics {
   activeCampaigns: number;
   pendingAgencies: number;
 }
-export interface FundingTrendPoint { date: string; amount: number; }
-export interface TopDestination { name: string; count: number; }
-export interface TravelerPreference { label: string; count: number; }
+export interface FundingTrendPoint {
+  date: string;
+  amount: number;
+}
+export interface TopDestination {
+  name: string;
+  count: number;
+}
+export interface TravelerPreference {
+  label: string;
+  count: number;
+}

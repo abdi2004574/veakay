@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { Button } from '@/components/ui/button';
+import * as React from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,7 +7,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -15,23 +15,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Textarea } from '@/components/ui/textarea';
+} from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useToast } from '@/components/ui/use-toast';
+} from "@/components/ui/select";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useToast } from "@/components/ui/use-toast";
 
 const reportSchema = z.object({
-  reason: z.enum(['spam', 'harassment', 'inappropriate', 'copyright', 'other']),
-  notes: z.string().min(10, 'Notes must be at least 10 characters').optional(),
+  reason: z.enum(["spam", "harassment", "inappropriate", "copyright", "other"]),
+  notes: z.string().min(10, "Notes must be at least 10 characters").optional(),
 });
 
 type ReportFormValues = z.infer<typeof reportSchema>;
@@ -55,11 +55,11 @@ export default function ReportFlagButton({
   });
 
   const handleSubmit = (values: ReportFormValues) => {
-    console.log('Reporting', contentType, contentId, values);
+    console.log("Reporting", contentType, contentId, values);
     toast({
-      title: 'Report submitted',
-      description: 'Content has been flagged for review.',
-      variant: 'default',
+      title: "Report submitted",
+      description: "Content has been flagged for review.",
+      variant: "default",
     });
     onReport?.();
     setOpen(false);

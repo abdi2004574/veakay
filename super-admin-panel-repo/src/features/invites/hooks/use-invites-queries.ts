@@ -1,4 +1,4 @@
-﻿import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { getInvites } from "../api/invites";
 
 export const INVITES_QUERY_KEY = ["admin", "invites"] as const;

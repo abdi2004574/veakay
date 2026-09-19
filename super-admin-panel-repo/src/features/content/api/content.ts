@@ -7,15 +7,22 @@ export async function getReports(filters?: ReportFilters) {
   if (filters?.targetType) params.targetType = filters.targetType;
   if (filters?.cursor) params.cursor = filters.cursor;
   if (filters?.limit) params.limit = String(filters.limit);
-  return getApi<{items: ContentReport[]; nextCursor: string|null}>(
-    "/admin/reports",
-    params
+  return getApi<{ items: ContentReport[]; nextCursor: string | null }>(
+    "/reports/admin/reports",
+    params,
   );
 }
 
-export async function resolveReport(reportId: string, action: "dismissed" | "actioned", note?: string) {
-  return patchApi<{ data: ContentReport }>(`/admin/reports/${reportId}`, {
-    status: action,
-    resolutionNote: note,
-  });
+export async function resolveReport(
+  reportId: string,
+  action: "dismissed" | "actioned",
+  note?: string,
+) {
+  return patchApi<{ data: ContentReport }>(
+    `/reports/admin/reports/${reportId}`,
+    {
+      status: action,
+      resolutionNote: note,
+    },
+  );
 }

@@ -1,9 +1,5 @@
 import { getApi, patchApi } from "../../../utils/api";
-import type {
-  FraudFlag,
-  FraudFlagFilters,
-  FraudFlagsResponse,
-} from "../types";
+import type { FraudFlag, FraudFlagFilters, FraudFlagsResponse } from "../types";
 
 export async function getFraudFlags(filters?: FraudFlagFilters) {
   const params: Record<string, string> = {};

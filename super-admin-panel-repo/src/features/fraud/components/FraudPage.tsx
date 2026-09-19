@@ -54,7 +54,9 @@ export default function FraudPage() {
   const flags = data?.data?.items ?? [];
 
   const openFlagsCount = flags.filter((f) => f.status === "open").length;
-  const criticalFlagsCount = flags.filter((f) => f.severity === "critical").length;
+  const criticalFlagsCount = flags.filter(
+    (f) => f.severity === "critical",
+  ).length;
 
   const handleReview = (flag: FraudFlag) => {
     setSelectedFlag(flag);
@@ -70,16 +72,23 @@ export default function FraudPage() {
   const handleSubmit = () => {
     if (!selectedFlag) return;
     reviewFlag(
-      { id: selectedFlag.id, status: newStatus, resolutionNote: resolutionNote || undefined },
+      {
+        id: selectedFlag.id,
+        status: newStatus,
+        resolutionNote: resolutionNote || undefined,
+      },
       {
         onSuccess: () => {
           toast({ description: "Fraud flag updated." });
           handleClose();
         },
         onError: () => {
-          toast({ description: "Failed to update fraud flag.", variant: "destructive" });
+          toast({
+            description: "Failed to update fraud flag.",
+            variant: "destructive",
+          });
         },
-      }
+      },
     );
   };
 
@@ -92,7 +101,9 @@ export default function FraudPage() {
           <AlertTriangle className="size-6 text-[var(--vaykae-pink)]" />
           Fraud Monitoring
         </h1>
-        <p className="text-muted-foreground">Review and manage fraud flags across the platform</p>
+        <p className="text-muted-foreground">
+          Review and manage fraud flags across the platform
+        </p>
       </div>
 
       {isError ? (
@@ -101,7 +112,9 @@ export default function FraudPage() {
           <p className="text-sm text-muted-foreground">
             {(error as Error)?.message ?? "Failed to load fraud data"}
           </p>
-          <Button variant="outline" size="sm" onClick={() => refetch()}>Retry</Button>
+          <Button variant="outline" size="sm" onClick={() => refetch()}>
+            Retry
+          </Button>
         </div>
       ) : isLoading ? (
         <div className="grid gap-4 md:grid-cols-3">
@@ -126,7 +139,9 @@ export default function FraudPage() {
           </div>
           <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
             <p className="text-sm font-medium">Critical Flags</p>
-            <p className="text-2xl font-bold text-destructive">{criticalFlagsCount}</p>
+            <p className="text-2xl font-bold text-destructive">
+              {criticalFlagsCount}
+            </p>
           </div>
           <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
             <p className="text-sm font-medium">Total Flags</p>
@@ -141,18 +156,31 @@ export default function FraudPage() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Fraud Flag Details</DialogTitle>
-            <DialogDescription>Review and take action on this fraud flag</DialogDescription>
+            <DialogDescription>
+              Review and take action on this fraud flag
+            </DialogDescription>
           </DialogHeader>
           {selectedFlag && (
             <div className="space-y-4 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>Status</Label>
-                  <Badge variant={statusVariant[selectedFlag.status] as BadgeProps["variant"]} className="mt-1 capitalize">{statusLabels[selectedFlag.status]}</Badge>
+                  <Badge
+                    variant={
+                      statusVariant[
+                        selectedFlag.status
+                      ] as BadgeProps["variant"]
+                    }
+                    className="mt-1 capitalize"
+                  >
+                    {statusLabels[selectedFlag.status]}
+                  </Badge>
                 </div>
                 <div>
                   <Label>User ID</Label>
-                  <p className="text-sm font-mono text-muted-foreground mt-1">{selectedFlag.userId}</p>
+                  <p className="text-sm font-mono text-muted-foreground mt-1">
+                    {selectedFlag.userId}
+                  </p>
                 </div>
                 <div className="col-span-2">
                   <Label>Description</Label>
@@ -160,12 +188,17 @@ export default function FraudPage() {
                 </div>
                 <div>
                   <Label>Created</Label>
-                  <p className="text-sm text-muted-foreground mt-1">{new Date(selectedFlag.createdAt).toLocaleDateString()}</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {new Date(selectedFlag.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
               </div>
               <div className="space-y-2">
                 <Label>Update Status</Label>
-                <Select value={newStatus} onValueChange={(v) => setNewStatus(v as FraudFlagStatus)}>
+                <Select
+                  value={newStatus}
+                  onValueChange={(v) => setNewStatus(v as FraudFlagStatus)}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -191,7 +224,13 @@ export default function FraudPage() {
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={handleClose} disabled={isReviewing}>Cancel</Button>
+            <Button
+              variant="outline"
+              onClick={handleClose}
+              disabled={isReviewing}
+            >
+              Cancel
+            </Button>
             <Button
               onClick={handleSubmit}
               disabled={isReviewing || (requireNote && !resolutionNote.trim())}
@@ -199,10 +238,10 @@ export default function FraudPage() {
               {isReviewing
                 ? "Updating..."
                 : newStatus === "resolved"
-                ? "Resolve"
-                : newStatus === "dismissed"
-                ? "Dismiss"
-                : "Set to Reviewing"}
+                  ? "Resolve"
+                  : newStatus === "dismissed"
+                    ? "Dismiss"
+                    : "Set to Reviewing"}
             </Button>
           </DialogFooter>
         </DialogContent>

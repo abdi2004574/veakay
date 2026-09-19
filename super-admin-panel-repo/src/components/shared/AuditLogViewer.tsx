@@ -1,13 +1,13 @@
-import { format } from 'date-fns';
+import { format } from "date-fns";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import type { AuditLogEntry as AuditLog } from '@/features/audit/types';
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import type { AuditLogEntry as AuditLog } from "@/features/audit/types";
 
 interface AuditLogViewerProps {
   logs: AuditLog[];
@@ -29,11 +29,13 @@ export default function AuditLogViewer({
   }
 
   if (!logs.length) {
-    return <p className="text-sm text-muted-foreground">No audit log entries.</p>;
+    return (
+      <p className="text-sm text-muted-foreground">No audit log entries.</p>
+    );
   }
 
   const getActionLabel = (action: string) => {
-    return action.replace(/./g, ' ').replace(/_/g, ' ');
+    return action.replace(/./g, " ").replace(/_/g, " ");
   };
 
   return (
@@ -45,10 +47,13 @@ export default function AuditLogViewer({
               <CardTitle className="text-sm font-medium">
                 {getActionLabel(log.action)}
               </CardTitle>
-              <Badge variant="outline">{format(new Date(log.createdAt), 'PPpp')}</Badge>
+              <Badge variant="outline">
+                {format(new Date(log.createdAt), "PPpp")}
+              </Badge>
             </div>
             <CardDescription>
-              By {log.actorUser?.displayName ?? log.actorRole} on {log.targetType}:{log.targetId}
+              By {log.actorUser?.displayName ?? log.actorRole} on{" "}
+              {log.targetType}:{log.targetId}
             </CardDescription>
           </CardHeader>
           {log.metadata && (

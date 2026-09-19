@@ -7,7 +7,7 @@ Web-based Super Admin dashboard for the Veakay platform. Handles registration ap
 This dashboard is one of three sibling repos under the Veakay monorepo handoff:
 
 - `backend-repo/` — NestJS API (shared source of truth for auth, data, business rules)
-- `dashboard-repo/` — this repo: Super Admin web panel
+- `super-admin-panel-repo/` — this repo: Super Admin web panel
 - `mobile-app-repo/` — Traveler + Agency mobile app (Expo)
 
 The shared product, architecture, and workflow docs (`AGENTS.md`, `HANDOFF.md`, `docs/`) live at the project root, not duplicated per-repo.
@@ -25,7 +25,6 @@ The shared product, architecture, and workflow docs (`AGENTS.md`, `HANDOFF.md`, 
 - **date-fns** — date math
 - **Vitest** + **@testing-library/react** — unit tests
 - **Playwright** — E2E tests
-- **Sentry** — error and crash reporting (vendor-agnostic init behind `@sentry/react`)
 
 ## Getting Started
 
@@ -136,3 +135,5 @@ The backend (`backend-repo/`) follows the conventions documented in `docs/06-api
 - Run `npm run lint`, `npm run typecheck`, `npm run test`, and `npm run test:e2e` before opening a PR.
 - All admin mutations write audit logs on the backend; this dashboard just calls the APIs that produce them. Do not bypass the API.
 - Never commit secrets, `.env`, or generated build artifacts.
+
+

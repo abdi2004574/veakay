@@ -156,9 +156,9 @@ export default function InvitesPage() {
                 {...form.register("acceptUrl")}
               />
               <p id="invite-url-help" className="text-sm text-muted-foreground">
-                The panel's default acceptance URL is prefilled. Clear it
-                to let the server use its default, or enter another URL when the
-                panel is served from a different origin.
+                The panel's default acceptance URL is prefilled. Clear it to let
+                the server use its default, or enter another URL when the panel
+                is served from a different origin.
               </p>
               {form.formState.errors.acceptUrl && (
                 <p

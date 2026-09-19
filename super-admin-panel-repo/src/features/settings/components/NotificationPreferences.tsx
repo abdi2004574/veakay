@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import {
   useNotificationPreferences,
   useUpdateNotificationPreferences,
@@ -119,12 +119,10 @@ export default function NotificationPreferences() {
               className="flex items-center justify-between gap-4 rounded-lg border border-border p-4"
             >
               <div className="space-y-1">
-                <div className="font-medium">
-                  {formatTypeLabel(pref.type)}
-                </div>
+                <div className="font-medium">{formatTypeLabel(pref.type)}</div>
                 <div className="text-sm text-muted-foreground">
-                  Configure how you receive {formatTypeLabel(pref.type).toLowerCase()}{" "}
-                  notifications
+                  Configure how you receive{" "}
+                  {formatTypeLabel(pref.type).toLowerCase()} notifications
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -134,7 +132,9 @@ export default function NotificationPreferences() {
                     checked={state.inAppEnabled}
                     onCheckedChange={() => toggle(pref.type, "inAppEnabled")}
                   />
-                  <Label className="text-xs text-muted-foreground">In-app</Label>
+                  <Label className="text-xs text-muted-foreground">
+                    In-app
+                  </Label>
                 </div>
                 <div className="flex flex-col items-center gap-1">
                   <Bell className="h-4 w-4 text-muted-foreground" />

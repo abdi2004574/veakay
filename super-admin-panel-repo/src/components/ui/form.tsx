@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 import {
   Controller,
   FormProvider,
@@ -6,9 +6,9 @@ import {
   type Control,
   type FieldPath,
   type FieldValues,
-} from 'react-hook-form';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
+} from "react-hook-form";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 const Form = FormProvider;
 
@@ -33,26 +33,28 @@ type FormFieldProps<
   }) => React.ReactElement;
 };
 
-function FormField<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>({
-  control,
-  name,
-  render,
-}: FormFieldProps<TFieldValues, TName>) {
+function FormField<
+  TFieldValues extends FieldValues,
+  TName extends FieldPath<TFieldValues>,
+>({ control, name, render }: FormFieldProps<TFieldValues, TName>) {
   return (
     <Controller
       name={name}
       control={control}
-      render={({ field, fieldState, formState }) => render({ field, fieldState, formState })}
+      render={({ field, fieldState, formState }) =>
+        render({ field, fieldState, formState })
+      }
     />
   );
 }
 
-const FormItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('space-y-2', className)} {...props} />
-  ),
-);
-FormItem.displayName = 'FormItem';
+const FormItem = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn("space-y-2", className)} {...props} />
+));
+FormItem.displayName = "FormItem";
 
 const FormLabel = React.forwardRef<
   HTMLLabelElement,
@@ -60,18 +62,19 @@ const FormLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <Label
     ref={ref}
-    className={cn('text-sm font-medium leading-none', className)}
+    className={cn("text-sm font-medium leading-none", className)}
     {...props}
   />
 ));
-FormLabel.displayName = 'FormLabel';
+FormLabel.displayName = "FormLabel";
 
-const FormControl = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('text-sm', className)} {...props} />
-  ),
-);
-FormControl.displayName = 'FormControl';
+const FormControl = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn("text-sm", className)} {...props} />
+));
+FormControl.displayName = "FormControl";
 
 const FormDescription = React.forwardRef<
   HTMLParagraphElement,
@@ -79,11 +82,11 @@ const FormDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn('text-sm text-muted-foreground', className)}
+    className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
 ));
-FormDescription.displayName = 'FormDescription';
+FormDescription.displayName = "FormDescription";
 
 const FormMessage = React.forwardRef<
   HTMLParagraphElement,
@@ -97,14 +100,14 @@ const FormMessage = React.forwardRef<
   return (
     <p
       ref={ref}
-      className={cn('text-sm font-medium text-destructive', className)}
+      className={cn("text-sm font-medium text-destructive", className)}
       {...props}
     >
-      {typeof error === 'string' ? error : 'Invalid value'}
+      {typeof error === "string" ? error : "Invalid value"}
     </p>
   );
 });
-FormMessage.displayName = 'FormMessage';
+FormMessage.displayName = "FormMessage";
 
 export {
   Form,

@@ -1,0 +1,6 @@
+[submodule "backend-repo"]
+    path = backend-repo
+    url = https://github.com/abdi2004574/veekay-webservices.git
+[submodule "mobile-app-repo"]
+    path = mobile-app-repo
+    url = https://github.com/abdi2004574/veekay-mobile-application.git

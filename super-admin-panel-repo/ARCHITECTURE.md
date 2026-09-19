@@ -1,4 +1,4 @@
-# Veakay Super Admin Panel — Architecture
+# Veakay Super Admin Panel ï¿½ Architecture
 
 ## Overview
 
@@ -16,7 +16,6 @@ The Super Admin Panel is a web-only, authenticated dashboard that consumes the e
 - **Dates:** date-fns
 - **HTTP:** Native `fetch` API (wrapped once)
 - **Testing:** Vitest (unit) + Playwright (E2E)
-- **Error Reporting:** Sentry (@sentry/react)
 
 ## Directory Structure
 
@@ -31,20 +30,20 @@ src/
 +-- hooks/                            # Custom React hooks
 +-- stores/                           # Zustand global state (auth, UI)
 +-- components/
-¦   +-- ui/                           # shadcn/ui primitives
-¦   +-- layout/                       # App shell, sidebar, header, navigation
-¦   +-- shared/                       # Cross-feature components
+ï¿½   +-- ui/                           # shadcn/ui primitives
+ï¿½   +-- layout/                       # App shell, sidebar, header, navigation
+ï¿½   +-- shared/                       # Cross-feature components
 +-- features/                         # Feature-based modules
-¦   +-- auth/                         # Login, 2FA, forgot password
-¦   +-- dashboard/                    # Metrics, charts, overview
-¦   +-- users/                        # User management
-¦   +-- agencies/                     # Agency oversight
-¦   +-- campaigns/                    # Campaign moderation
-¦   +-- payments/                     # Withdrawal review, refunds
-¦   +-- content/                      # Moderation queue, terms editor
-¦   +-- notifications/                # Broadcast composer, history
-¦   +-- audit/                        # Audit log viewer
-¦   +-- settings/                     # Admin profile, preferences
+ï¿½   +-- auth/                         # Login, 2FA, forgot password
+ï¿½   +-- dashboard/                    # Metrics, charts, overview
+ï¿½   +-- users/                        # User management
+ï¿½   +-- agencies/                     # Agency oversight
+ï¿½   +-- campaigns/                    # Campaign moderation
+ï¿½   +-- payments/                     # Withdrawal review, refunds
+ï¿½   +-- content/                      # Moderation queue, terms editor
+ï¿½   +-- notifications/                # Broadcast composer, history
+ï¿½   +-- audit/                        # Audit log viewer
+ï¿½   +-- settings/                     # Admin profile, preferences
 +-- tests/                            # Unit + E2E tests
 ```
 
@@ -134,3 +133,4 @@ CORS_ORIGINS=https://admin.veakay.com,https://app.veakay.com
 | Payment Oversight | ?? Partial | OQ #3 (threshold), OQ #4 (refund-after-withdrawal), OQ #27 (fee vs commission) |
 | Fraud Detection | ?? Blocked | OQ #21 (pre/post moderation), OQ #22 (fraud criteria) |
 | KYC/GDPR Compliance | ?? Blocked | OQ #23 (jurisdictions + retention) |
+

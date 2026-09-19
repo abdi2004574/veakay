@@ -1,1 +1,6 @@
-export { formatCurrency, formatDate, formatRelativeTime, truncateText } from "../lib/utils";
+export {
+  formatCurrency,
+  formatDate,
+  formatRelativeTime,
+  truncateText,
+} from "../lib/utils";

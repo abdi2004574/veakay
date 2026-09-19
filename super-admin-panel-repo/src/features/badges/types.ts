@@ -1,4 +1,4 @@
-﻿export type VerifiedBadgeSubjectType = "user" | "agency";
+export type VerifiedBadgeSubjectType = "user" | "agency";
 
 export interface VerifiedBadge {
   id: string;

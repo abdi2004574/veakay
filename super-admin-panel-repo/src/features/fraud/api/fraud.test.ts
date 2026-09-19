@@ -92,4 +92,3 @@ describe("reviewFraudFlag", () => {
     expect(result.data.status).toBe("resolved");
   });
 });
-

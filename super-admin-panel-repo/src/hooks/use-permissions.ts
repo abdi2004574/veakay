@@ -26,7 +26,9 @@ export function usePermissions(role?: UserRole) {
 export function hasPermission(
   permissions: ReturnType<typeof usePermissions>["permissions"],
   resource: keyof typeof permissions,
-  action: string
+  action: string,
 ): boolean {
-  return !!permissions[resource]?.[action as keyof (typeof permissions)[typeof resource]];
+  return !!permissions[resource]?.[
+    action as keyof (typeof permissions)[typeof resource]
+  ];
 }

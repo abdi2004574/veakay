@@ -1,4 +1,4 @@
-﻿export interface TopPerformingTraveler {
+export interface TopPerformingTraveler {
   id: string;
   username: string;
   displayName: string;

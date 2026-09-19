@@ -1,9 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { login, verifyTwoFactor, logout, forgotPassword } from '@/features/auth/api/auth';
-import { AUTH_QUERY_KEYS } from '@/features/auth/api/auth';
-import { getToken } from '@/lib/auth-client';
-import { useAuthStore } from '@/stores/auth-store';
-import type { AuthResponse } from '@/features/auth/types';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  login,
+  verifyTwoFactor,
+  logout,
+  forgotPassword,
+} from "@/features/auth/api/auth";
+import { AUTH_QUERY_KEYS } from "@/features/auth/api/auth";
+import { getToken } from "@/lib/auth-client";
+import { useAuthStore } from "@/stores/auth-store";
+import type { AuthResponse } from "@/features/auth/types";
 
 export function useLogin() {
   const queryClient = useQueryClient();
@@ -26,11 +31,15 @@ export function useTwoFactor() {
           id: data.user.id,
           email: data.user.email,
           displayName: data.user.displayName,
-          role: data.user.role as "traveler" | "agency" | "admin" | "super_admin",
+          role: data.user.role as
+            "traveler" | "agency" | "admin" | "super_admin",
           platformRole: "super_admin",
           isActive: true,
         },
-        { accessToken: data.accessToken, expiresAt: Date.now() + expiresIn * 1000 }
+        {
+          accessToken: data.accessToken,
+          expiresAt: Date.now() + expiresIn * 1000,
+        },
       );
     },
   });

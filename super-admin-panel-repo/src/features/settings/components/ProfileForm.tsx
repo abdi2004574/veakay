@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAdminProfile, useUpdateAdminProfile } from "../hooks/use-settings";
 import { GradientButton } from "@/components/ui/gradient-button";
 import { Input } from "@/components/ui/input";
@@ -63,7 +63,10 @@ export default function ProfileForm() {
   if (!profile) {
     return (
       <div className="mx-auto max-w-2xl">
-        <ErrorState title="No profile" message="Could not retrieve your admin profile." />
+        <ErrorState
+          title="No profile"
+          message="Could not retrieve your admin profile."
+        />
       </div>
     );
   }

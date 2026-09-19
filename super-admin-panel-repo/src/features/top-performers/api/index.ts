@@ -1,1 +1,1 @@
-﻿export * from "./top-performers";
+export * from "./top-performers";

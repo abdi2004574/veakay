@@ -1,1 +1,1 @@
-﻿export * from "./TopPerformersPage";
+export * from "./TopPerformersPage";

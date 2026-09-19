@@ -1,4 +1,4 @@
-﻿import { Suspense, lazy } from "react";
+import { Suspense, lazy } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PageShell } from "@/components/shared/PageShell";

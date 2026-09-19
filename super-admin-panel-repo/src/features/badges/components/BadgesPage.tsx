@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { PageShell } from "@/components/shared/PageShell";
 import { Button } from "@/components/ui/button";
 import {
@@ -113,7 +113,10 @@ export default function BadgesPage() {
                 aria-invalid={Boolean(subjectId && !subjectId.trim())}
               />
               {subjectId && !subjectId.trim() && (
-                <p className="text-sm font-medium text-destructive" role="alert">
+                <p
+                  className="text-sm font-medium text-destructive"
+                  role="alert"
+                >
                   Subject ID is required.
                 </p>
               )}
@@ -134,7 +137,10 @@ export default function BadgesPage() {
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={assignMutation.isPending || !subjectId.trim()}>
+              <Button
+                type="submit"
+                disabled={assignMutation.isPending || !subjectId.trim()}
+              >
                 {assignMutation.isPending ? "Assigning..." : "Assign badge"}
               </Button>
             </DialogFooter>
