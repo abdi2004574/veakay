@@ -1,8 +1,0 @@
-[debug] [2026-09-16T16:26:54.946Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2026-09-16T16:26:54.960Z] > authorizing via signed-in user (shadowabdi2004@gmail.com)
-[debug] [2026-09-17T06:04:16.227Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2026-09-17T06:04:16.229Z] > authorizing via signed-in user (shadowabdi2004@gmail.com)
-[debug] [2026-09-17T06:04:16.263Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2026-09-17T06:04:16.264Z] > authorizing via signed-in user (shadowabdi2004@gmail.com)
-[debug] [2026-09-17T06:04:16.307Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2026-09-17T06:04:16.307Z] > authorizing via signed-in user (shadowabdi2004@gmail.com)

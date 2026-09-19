@@ -7,7 +7,7 @@ Allow super admins to review pending agency registrations and transition them to
 ## MVP Scope
 
 - List all agencies in `pending_verification` status.
-- Approve a pending agency: transitions to `approved`, sends confirmation email, emits Pino audit log.
+- Approve a pending agency: transitions to `approved`, assigns a `VerifiedBadge` with `subjectType=agency`, sends confirmation email, and writes approval and badge-assignment audit records/logs.
 - Reject a pending agency: requires a reason string, transitions to `rejected` with `rejectionReason` stored, sends rejection email with the reason, emits Pino audit log.
 - Guard all endpoints with `@RequirePlatformRole(super_admin)`.
 
@@ -34,9 +34,10 @@ Allow super admins to review pending agency registrations and transition them to
 2. Admin calls `POST /admin/agencies/:id/approve`.
 3. Backend validates agency is `pending_verification`.
 4. Backend updates status to `approved`.
-5. Backend emits Pino audit log: `agency.verification.approved`.
-6. Backend sends confirmation email via `MailService.sendAgencyApprovedEmail`.
-7. Backend returns the updated agency record.
+5. Backend assigns a `VerifiedBadge` with `subjectType=agency` and `subjectId` set to the agency ID.
+6. Backend writes the agency approval log and the badge-assignment audit record.
+7. Backend sends confirmation email via `MailService.sendAgencyApprovedEmail`.
+8. Backend returns the updated agency record.
 
 ### Admin rejects an agency
 
@@ -63,6 +64,7 @@ Allow super admins to review pending agency registrations and transition them to
 - `Agency`: `status` (ENUM: pending_verification | approved | rejected), `rejectionReason` (string, nullable), `reputationScore`, `subscriptionTier`, `logoMediaId`, `agencyName`, `businessContact`, `businessAddress`
 - `AgencyDocument`: `agencyId`, `type`, `mediaId`
 - `User`: `email`, `displayName`, `username`, `role`
+- `VerifiedBadge`: `subjectType=agency`, `subjectId` (agency ID), `assignedById` (approving admin)
 
 The `rejectionReason` column already exists on the `Agency` model — no migration needed.
 

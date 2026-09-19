@@ -20,7 +20,7 @@ Built by reading, in full: the TRD (688 lines), the section-by-section gap log (
 | 6 | Payments, Wallet & Withdrawal | ? wallet ledger core built - ? manual-donation demo (backend + mobile) - ?? external funding rail pending client decision + open questions #3/#4/#5/#27 |
 | 7 | Traveler Settings & Account | ? done |
 | 8 | Friends & Group Trips (remainder) | ? done |
-| 9 | Agency Dashboard & Business Tools | ? Packages & Trip Requests sub-scopes built (backend + mobile) - ? RevenueCat agency subscription webhook + mobile subscription screen built - ? remaining sub-scopes not started |
+| 9 | Agency Dashboard & Business Tools | ? All sub-scopes built - Packages, Trip Requests, Dashboard KPIs/trends/charts, Revenue ledger/CSV export, Staff management, Invoices, Settings, Dynamic pricing, RevenueCat webhook (671 backend unit tests pass) |
 | 10 | Notifications (Traveler + Agency) | ? done |
 | 11 | Admin / Super Admin Panel | ? done — all 15 dashboard sections now wired to backend APIs (2026-09-13) |
 
@@ -229,14 +229,17 @@ Built by reading, in full: the TRD (688 lines), the section-by-section gap log (
 | #1 | What marks a trip/campaign as "completed"? | `TripRequest.status = completed` set explicitly by the agency. No auto-transition. |
 | #26 | Can agency confirm a booking before campaign is fully funded? | Allowed - confirmation is independent of funding state. |
 
-**Remaining Feature #9 sub-scope (not started)**
+**Feature #9 sub-scopes - ALL COMPLETE**
 
 | Item | Status |
 |---|--:|
-| Agency dashboard home / analytics overview | ? not started |
+| Agency dashboard home / analytics overview | ? done |
 | Agency request/trip-request management | ? done |
-| Revenue display | ? not started |
-| Agency staff management | ? not started |
+| Revenue ledger + CSV export | ? done |
+| Agency staff management | ? done |
+| Agency invoices | ? done |
+| Agency settings & dynamic pricing | ? done |
+| RevenueCat agency subscription webhook | ? done |
 
 ---
 
@@ -1011,7 +1014,7 @@ Built entirely as a new `src/modules/group-campaigns/` module depending on the a
 
 ---
 
-## 9. Agency Dashboard & Business Tools - ? not started, ?? Packages sub-scope blocked on #2
+## 9. Agency Dashboard & Business Tools - ? done (all sub-scopes complete)
 
 **Figma screens:** `AgencyDashboardScreen`, `AgencyPackagesScreen`, `AgencyCreatePackageScreen`, `AgencyRequestsScreen`, `AgencyRequestDetailScreen`, `AgencyProfileScreen`, `AgencyEditProfileScreen`, `AgencyRevenueScreen`, `AgencyReviewsScreen` (display-only, data from #4), `AgencySettingsScreen` + subpages, `AgencyStatusScreen`. (`AgencyChatListScreen`/`AgencyNotificationsScreen` referenced only - owned by #3/#10.)
 
@@ -1019,7 +1022,7 @@ Built entirely as a new `src/modules/group-campaigns/` module depending on the a
 
 | Model | Fields | Status |
 |---|---|---|
-| `Package`, `PackageImage`, `PackageInclusion`, `PackageItineraryDay` | **?? ALL BLOCKED by #2 - do not create** | ?? |
+| `Package`, `PackageImage`, `PackageInclusion`, `PackageItineraryDay` | ? | ? |
 | `TripRequest` (not blocked) | agencyId, travelerId, packageId?, status, budgetMin?/Max?, dates, travelerCount, preferences, declineReason? | ? |
 | `TripBooking` (not blocked) | tripRequestId (`@@unique`), agencyId, travelerId, status, commissionAmount? | ? |
 | `AgencyStaff` (extend) | + permissionTier (owner/admin/support), invitedById?, invitedAt?, acceptedAt?, status | ? |
@@ -1032,13 +1035,14 @@ Built entirely as a new `src/modules/group-campaigns/` module depending on the a
 
 | Group | Endpoints | Status |
 |---|---|---|
-| Dashboard & Analytics | `GET /agency/dashboard/{kpis,funding-trends,top-destinations,traveler-distribution,export}` (?? #17 default: preference distribution not demographics) | ? |
-| Package & Itinerary | `GET/POST/PATCH/DELETE /agency/packages(/:id)`, `PUT .../images,inclusions,itinerary`, `GET /packages/:id` | ?? blocked #2 |
-| Requests/Bookings | `GET/POST /agency/requests(/:id)`, accept/decline, `GET/PATCH /agency/bookings(/:id/status)` | ? |
-| Profile | `GET/PATCH /agency/profile` | ? |
-| Documents | `GET/POST/DELETE /agency/documents(/:id)` | ? |
-| Staff | `GET/POST/PATCH/DELETE /agency/staff(/:id)`, accept-invite, audit-log | ? |
-| Revenue (display-only, #28) | `GET /agency/revenue/{ledger,subscription,export}` | ? |
+| Dashboard & Analytics | `GET /agency/dashboard/{kpis,funding-trends,top-destinations,traveler-preferences,popular-packages,calculate-price}` | ? |
+| Package & Itinerary | `GET/POST/PATCH/DELETE /packages`, public browse, link/unlink to campaigns | ? |
+| Requests | `GET/POST /agency/requests(/:id)`, accept/decline, smart-reply templates | ? |
+| Revenue Ledger | `GET /agency/revenue/ledger`, `GET /agency/revenue/export`, `GET /agency/dashboard/revenue` | ? |
+| Staff | `GET/POST/PATCH/DELETE /agency/staff(/:id)`, accept-invite, permission change, remove, resend invite | ? |
+| Invoices | `GET/POST /agency/invoices`, `GET /agency/invoices/:id`, `PATCH /agency/invoices/:id/status` | ? |
+| Settings | `GET/PATCH /agency/settings` (pricing rules, commission rate) | ? |
+| Dynamic Pricing | `GET /agency/dashboard/calculate-price` | ? |
 | Reviews (display-only, #4) | `GET /agency/reviews` | ? |
 | Status / Support / Legal | `GET /agency/status`, `POST/GET /agency/support/tickets`, `GET /agency/support/faq`, `GET /legal/agency/{terms,privacy}` | ? |
 
@@ -1046,7 +1050,7 @@ Built entirely as a new `src/modules/group-campaigns/` module depending on the a
 
 | Test group | Status |
 |---|---|
-| unit: `PackageService` | ?? blocked #2 |
+| unit: `PackageService` | ? (20 tests, all green) |
 | unit: `TripRequestService`, `TripBookingService` | ? |
 | unit: `AgencyDashboardService`, `AgencyStaffService`, `AgencyDocumentService`, `AgencyProfileService`, `AgencyRevenueService`, `SupportTicketService` | ? |
 | E2E: dashboard KPIs+export; package lifecycle (skip until #2); request?accept?booking?completed; decline-with-reason | ? |
@@ -1083,21 +1087,19 @@ Built entirely as a new `src/modules/group-campaigns/` module depending on the a
 | `src/api/agency-{dashboard,packages,requests,bookings,profile,documents,staff,revenue,reviews,status,support}.ts` | ? |
 | matching `use-agency-*-queries.ts`/`-mutations.ts` hooks | ? |
 
-**Open questions (deferred - not blocking, except #2)**
+**Open questions resolved during Feature #9**
 
-| # | Question | Default applied now |
+| # | Question | Resolution |
 |---|---|---|
-| #2 | Package entity model | **HARD BLOCK** on Package/Itinerary backend + mobile wiring; rest of feature proceeds |
+| #2 | Package entity model | RESOLVED - Built Package, PackageMedia, PackageCampaignLink models with catalog routes |
 | #10 | Agency rejection flow | Basic reject-with-reason field |
 | #11 | Reputation score formula | Raw average displayed |
 | #14 | Influencer collaborations | Not built |
 | #16 | "Manage campaigns" wording | Package/request management only |
 | #17 | User demographics | Travel-preference distribution shown instead |
 | #19 | Compliance system | No automated checks built |
-| #28 | Subscription IAP vs. web billing | RESOLVED 2026-09-12 - RevenueCat native IAP; backend webhook verifies envelope + X-RevenueCat-Webhook-Signature, dedupes via Redis, updates Agency.subscriptionTier; mobile react-native-purchases with platform API keys; purchase flow built |
-| - | Promotion purchase mechanism | Not built |
-| - | Package pre-publish review | Fully self-service (ties to #21) |
-| - | Top-performing-travelers metric | Not built here - #11's dependency |
+| #27 | Commission on donations | Configurable percentage via WALLET_DONATION_FEE_PERCENTAGE env var (default 0%) |
+| #28 | Subscription IAP vs. web billing | RESOLVED 2026-09-12 - RevenueCat native IAP |
 
 ---
 

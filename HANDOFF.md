@@ -1,6 +1,8 @@
-# Handoff ? Veakay
+# Handoff — Veakay
 
-This file is local-only and must not be committed, in any of the three repos. Update it whenever work changes direction, a feature is completed, a decision is made, or something is left for the next agent. It covers `backend-repo/`, `dashboard-repo/`, and `mobile-app-repo/` together, not one per repo.
+This file is local-only and must not be committed, in any of the three repos. Update it whenever work changes direction, a feature is completed, a decision is made, or something is left for the next agent. It covers `backend-repo/`, `super-admin-panel-repo/`, and `mobile-app-repo/` together, not one per repo.
+
+> **Note:** dashboard-repo/ is archived/deprecated. The Super Admin web panel now lives in super-admin-panel-repo/. References to dashboard-repo/ below are historical.
 
 ## Agent Instructions
 
@@ -104,6 +106,38 @@ See `docs/Veakay_TRD_Open_Questions.md` (28 items, verified line-by-line against
 - **RevenueCat agency subscription webhook (2026-09-12)**: backend `revenuecat-webhook.controller.ts` / `.service.ts` / `.dto.ts` receive the official RevenueCat envelope, verify `X-RevenueCat-Webhook-Signature` (HMAC + timestamp tolerance), deduplicate via Redis, resolve the agency, and update `Agency.subscriptionTier`. Backend RevenueCat unit: 30/30 passed; RevenueCat E2E: 14/14 passed; wallet production regression E2E: 1/1 passed; backend build clean. Mobile RevenueCat `react-native-purchases` wiring (purchase/restore/customer-info helpers, known package/entitlement mappings, agency subscription screen/hook) verified via Expo web/focused tests, not a native/dockerized mobile build - 44 RevenueCat tests passed and a focused RevenueCat mobile lint clean. Expo web build passed.
 
 **Verified final state: prior full-suite 539/539 unit tests (41 suites) and 239/239 E2E tests (22 suites) were all green. New focused checks green: backend RevenueCat unit 30/30, RevenueCat E2E 14/14, wallet production regression E2E 1/1, backend build; mobile RevenueCat 44/44, focused lint, Expo web build. Native iOS/Android builds were not run.**
+
+## Production Fix Session (2026-09-18)
+
+All three repos now build, type-check, and pass unit tests cleanly.
+
+### Phase 1 - Build Verification
+- **backend-repo**: `npx tsc --noEmit --strict` â€” 0 errors; `npm run build` (nest build) â€” dist/ produced with 23 modules; `npm run test` â€” 561/561 tests passed
+- **super-admin-panel-repo**: `npx tsc --noEmit --strict` â€” 0 errors; `npm run build` â€” dist/ produced; `npm run test` â€” 3/3 tests passed
+- **mobile-app-repo**: `npx tsc --noEmit` â€” 0 errors; `npx expo export --platform web` â€” dist/ produced
+
+### Phase 2 - API Integrity
+- Swagger @ApiBearerAuth on public endpoints in agency-directory, reviews, campaigns controllers â€” already correct (no @ApiBearerAuth on @Public() methods)
+- Hardcoded /api/v1/ in super-admin TopPerformersTable.tsx â€” fixed to /api/storage/ (Vite proxy handles version prefix)
+- Pagination headers (X-Next-Cursor, X-Has-More) â€” verified in ResponseInterceptor
+
+### Phase 3 - Stubs and Gaps
+- Firebase push notifications (mobile): no stub file, @react-native-firebase/app not in app.json â€” confirmed no action needed
+- RevenueCat webhook HMAC verification: fully implemented with Redis dedup
+- Sentry: removed from README Tech Stack (not installed)
+- Agency verification flow: end-to-end verified (register â†’ OTP â†’ admin approve â†’ status=approved â†’ badge assigned)
+
+### Phase 4 - Testing
+- Backend E2E: Docker unavailable (documented known issue)
+- Super-admin Playwright E2E: Docker unavailable (documented known issue)
+
+### Known Issues
+- Docker Desktop/daemon not running on this environment â€” E2E tests blocked (backend and mobile)
+- No .env files tracked in any repo; .env.example tracked only
+
+## RevenueCat Funding Rail Decision (2026-09-19)
+
+RevenueCat will be used for both agency subscription billing and the traveler donation funding rail. The IFundingProvider interface will be extended with a RevenueCatFundingProvider, and the donation webhook handler will process NON_SUBSCRIPTION_PURCHASE events.
 
 
 

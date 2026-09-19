@@ -67,7 +67,7 @@ These must never be committed, to any of the three repos:
 - Redis 7 (Docker), cache, BullMQ queues, Socket.io pub/sub adapter
 - BullMQ + @nestjs/bullmq, background jobs (notification dispatch, campaign/badge milestone checks, scheduled reports)
 - Socket.io + @socket.io/redis-adapter, real-time chat (traveler-friend, group, traveler-agency)
-- Stripe Connect, donations, agency/traveler payouts, commission splitting (agency subscription billing is handled by RevenueCat native IAP, not Stripe)
+- Stripe Connect, agency/traveler payouts, commission splitting (agency subscription billing AND traveler donations are handled by RevenueCat native IAP, not Stripe)
 - MinIO (Docker, local) / AWS S3 (production), S3-compatible, no code change to swap. Stores campaign images, agency documents, chat media, profile photos.
 - Firebase Admin SDK, push notifications only, NOT authentication
 - Generic SMTP (via `nodemailer`), transactional email (OTP delivery, receipts) in prod, MailHog locally. Provider not yet chosen, provider-agnostic by design (host/port/credentials in env vars, no vendor SDK), confirmed locally as MailHog + MinIO for dev.
@@ -92,6 +92,11 @@ Some external services are deliberately left open rather than assumed. When work
 This list should shrink over time as each is decided; when one is confirmed, update this file, `HANDOFF.md`, and whichever numbered doc references it.
 
 ## Dashboard Stack (`dashboard-repo/`)
+
+## Feature #9 - Agency Dashboard
+
+- **Status:** Done
+- **Built:** Agency dashboard, invoice workflows, agency settings, and RevenueCat native subscription integration.
 
 Not started. Consumes `backend-repo`'s API. Framework not yet decided.
 

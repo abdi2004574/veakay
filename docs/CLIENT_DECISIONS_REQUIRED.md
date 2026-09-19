@@ -1,6 +1,6 @@
 # Client Decisions Required Before Feature #6 (Payments/Wallet/Withdrawal)
 
-This document lists the **7 critical open questions** that require client decisions before the Payments/Wallet/Withdrawal feature can be completed. Each decision blocks specific implementation paths.
+This document lists the **8 critical open questions (1 resolved: Funding Rail)** that require client decisions before the Payments/Wallet/Withdrawal feature can be completed. Each decision blocks specific implementation paths.
 
 ---
 
@@ -8,6 +8,7 @@ This document lists the **7 critical open questions** that require client decisi
 
 | # | Decision | Blocks |
 |---|----------|--------|
+| 0 | Funding Rail Decision | RevenueCat in-app purchases for both agency subscriptions AND traveler donations (RESOLVED 2026-09-19)
 | 1 | Campaign/Trip/Booking Lifecycle Status Model | Withdrawal eligibility, review triggers, badge milestones, analytics events, notification triggers |
 | 2 | High-Value Withdrawal Threshold | KYC enforcement in wallet service, Stripe Identity integration decision |
 | 3 | Refund-After-Withdrawal Policy | Refund handling logic, platform liability, traveler clawback flow, Stripe dispute handling |
@@ -101,7 +102,7 @@ Draft -> Active -> Funded -> Booked -> Completed
 
 **Basic/Premium/Featured tiers -- purchased via iOS/Android IAP or web billing?**
 
-**Current Assumption:** Web-based Stripe Billing (sidesteps Apple/Google 30% fee)
+**Current Assumption:** Resolved: RevenueCat native IAP on iOS/Android
 
 **Questions for Client:**
 - Confirm web-only billing via Stripe Billing Portal?
@@ -109,7 +110,7 @@ Draft -> Active -> Funded -> Booked -> Completed
 - If no (requires IAP): Need RevenueCat + App Store Connect / Play Console setup, 30% fee modeling
 - Hybrid? (Web for new, IAP for existing?) -- adds complexity
 
-**Blocked:** Agency subscription module, billing UI, Stripe Connect account onboarding for agencies, commission calculation (tier-dependent), webhook handlers for subscription events.
+Resolved 2026-09-12: Agency subscriptions (Basic/Premium/Featured) are purchased natively on iOS and Android via RevenueCat. Backend receives RevenueCat envelope + X-RevenueCat-Webhook-Signature, verifies HMAC/timestamp, deduplicates with Redis, resolves the agency, and updates Agency.subscriptionTier.
 
 ---
 
@@ -163,5 +164,5 @@ Draft -> Active -> Funded -> Booked -> Completed
 
 ---
 
-*Last updated: 2026-09-11*  
+*Last updated: 2026-09-19*  
 *Source: `docs/Veakay_TRD_Open_Questions.md` items #1, #2, #3, #4, #5, #23, #27, #28*

@@ -2,29 +2,29 @@
 
 ## Goal
 
-Provide a processor-agnostic wallet ledger so the eventual funding-rail decision (JazzCash / Easypaisa / bank gateway / Stripe Connect — TBD per the client's confirmation) can be wired in as a single concrete implementation of the existing `IFundingProvider` interface, without changing the service layer that owns balances, transactions, and the withdrawal state machine. The MVP ships the ledger, the interface boundary, an admin-only manual credit endpoint for ops reconciliation, and a deliberate two-stamp approval flow (`requested ? approved ? paid`) where the wallet debit is deferred to the processor's "paid" signal so a reversal cannot strand a negative balance.
+Provide a processor-agnostic wallet ledger so the eventual RevenueCat in-app purchase flow (per client decision 2026-09-19) can be wired in as a single concrete implementation of the existing `IFundingProvider` interface, without changing the service layer that owns balances, transactions, and the withdrawal state machine. The MVP ships the ledger, the interface boundary, an admin-only manual credit endpoint for ops reconciliation, and a deliberate two-stamp approval flow (`requested ? approved ? paid`) where the wallet debit is deferred to the processor's "paid" signal so a reversal cannot strand a negative balance.
 
 ## MVP Scope
 
-- **`WalletAccount`** — one row per user, auto-created on first access, single-currency MVP default `USD`, holds a `cachedBalance` decimal updated transactionally with every credit/debit.
-- **Append-only `WalletTransaction` ledger** — every credit/debit writes a row with `direction`, `amount`, `currency`, `type` (enum), `referenceType`, `referenceId`, optional `idempotencyKey` (unique), and a free-text `description`. No row is ever updated or deleted after insert; reversals are new rows.
-- **Reworked `Donation`** — decoupled from Stripe-specific fields (`stripe_payment_intent_id`, `status` dropped); gains `donorDisplayName` and `walletTransactionId` (unique) so a donation is linked to the wallet credit it produced.
-- **Reworked `WithdrawalRequest`** — new status flow `requested ? approved | rejected ? paid`; gains `currency`, `highValueThreshold` (stored, not yet enforced), `walletTransactionId` (unique, set when paid), `rejectionReason`; loses `stripe_payout_id`; `payoutAccountId` becomes optional (the funding-rail vendor is TBD).
-- **`IFundingProvider` interface** + `FUNDING_PROVIDER` injection token — the seam where the eventual processor (JazzCash / Easypaisa / bank gateway / Stripe Connect) plugs in. Today it has one method (`deposit`) returning `{ ok, externalId?, message? }`.
-- **`ManualFundingProvider` stub** — the only current implementation; always returns `{ ok: true }`. Exposes a single admin-only endpoint (`POST /admin/wallet/wallets/:userId/credit`) for ops to credit balances during reconciliation. No public money movement.
-- **Idempotency-Key header** — required on every wallet-mutating endpoint, validated by `IdempotencyKeyGuard` (8-128 chars). The key is persisted on `WalletTransaction.idempotencyKey` (unique) so a retry returns the original transaction instead of double-writing.
-- **Pino audit log** — every state change writes a structured JSON line via `Logger` with a stable `audit` discriminator: `wallet.transaction`, `wallet.withdrawal.requested`, `wallet.withdrawal.reviewed`, `wallet.withdrawal.paid`. Sufficient for the admin audit-trail surface area today.
-- **Admin-only ops reconciliation for mark-paid** — `POST /admin/wallet/withdrawals/:id/mark-paid` exists so ops staff can manually reconcile transfers that happened outside the system. This endpoint is removed when the processor webhook replaces it.
-- **`recordDonation` internal hook** — a service method called from the (TBD) processor webhook handler when a real donation completes. Atomically writes the donation row + the wallet credit + the campaign `raised_amount` increment, all in one Prisma `$transaction`. Not exposed via any HTTP endpoint by design — the public donation surface stays processor-specific and is built alongside the real provider.
+- **`WalletAccount`** ï¿½ one row per user, auto-created on first access, single-currency MVP default `USD`, holds a `cachedBalance` decimal updated transactionally with every credit/debit.
+- **Append-only `WalletTransaction` ledger** ï¿½ every credit/debit writes a row with `direction`, `amount`, `currency`, `type` (enum), `referenceType`, `referenceId`, optional `idempotencyKey` (unique), and a free-text `description`. No row is ever updated or deleted after insert; reversals are new rows.
+- **Reworked `Donation`** ï¿½ decoupled from Stripe-specific fields (`stripe_payment_intent_id`, `status` dropped); gains `donorDisplayName` and `walletTransactionId` (unique) so a donation is linked to the wallet credit it produced.
+- **Reworked `WithdrawalRequest`** ï¿½ new status flow `requested ? approved | rejected ? paid`; gains `currency`, `highValueThreshold` (stored, not yet enforced), `walletTransactionId` (unique, set when paid), `rejectionReason`; loses `stripe_payout_id`; `payoutAccountId` becomes optional (the funding-rail vendor is RevenueCat in-app purchase).
+- **`IFundingProvider` interface** + `FUNDING_PROVIDER` injection token ï¿½ the seam where the eventual processor (RevenueCat in-app purchase) plugs in. Today it has one method (`deposit`) returning `{ ok, externalId?, message? }`.
+- **`ManualFundingProvider` stub** ï¿½ the only current implementation; always returns `{ ok: true }`. Exposes a single admin-only endpoint (`POST /admin/wallet/wallets/:userId/credit`) for ops to credit balances during reconciliation. No public money movement.
+- **Idempotency-Key header** ï¿½ required on every wallet-mutating endpoint, validated by `IdempotencyKeyGuard` (8-128 chars). The key is persisted on `WalletTransaction.idempotencyKey` (unique) so a retry returns the original transaction instead of double-writing.
+- **Pino audit log** ï¿½ every state change writes a structured JSON line via `Logger` with a stable `audit` discriminator: `wallet.transaction`, `wallet.withdrawal.requested`, `wallet.withdrawal.reviewed`, `wallet.withdrawal.paid`. Sufficient for the admin audit-trail surface area today.
+- **Admin-only ops reconciliation for mark-paid** ï¿½ `POST /admin/wallet/withdrawals/:id/mark-paid` exists so ops staff can manually reconcile transfers that happened outside the system. This endpoint is removed when the processor webhook replaces it.
+- **`recordDonation` internal hook** ï¿½ a service method called from the (RevenueCat in-app purchase) processor webhook handler when a real donation completes. Atomically writes the donation row + the wallet credit + the campaign `raised_amount` increment, all in one Prisma `$transaction`. Not exposed via any HTTP endpoint by design ï¿½ the public donation surface stays processor-specific and is built alongside the real provider.
 
 ## Later Scope
 
-- Real processor integration (JazzCash / Easypaisa / bank gateway / Stripe Connect — TBD) as a concrete `IFundingProvider`.
+- RevenueCat in-app purchase donation flow (NON_SUBSCRIPTION_PURCHASE webhook handling, net-of-platform-fee wallet credit) as a concrete `IFundingProvider`.
 - Commission splitting on the booking-payment wallet type (enum value reserved, no service method writes it today).
-- Refund-after-withdrawal handling (TRD Open Question #4 — see Open Questions table).
-- High-value threshold enforcement (TRD Open Question #3 — `withdrawal_requests.high_value_threshold` column is kept on the model for the future; no gate reads it today).
+- Refund-after-withdrawal handling (TRD Open Question #4 ï¿½ see Open Questions table).
+- High-value threshold enforcement (TRD Open Question #3 ï¿½ `withdrawal_requests.high_value_threshold` column is kept on the model for the future; no gate reads it today).
 - Public donation endpoint that calls the real processor (the processor-specific surface stays stubbed today; the seam is `IFundingProvider`).
-- Agency subscription billing (TRD Open Question #28 — explicitly out of scope for this feature; web-based Stripe Billing is the working assumption per AGENTS.md).
+- Agency subscription billing (TRD Open Question #28 ï¿½ explicitly out of scope for this feature; web-based Stripe Billing is the working assumption per AGENTS.md).
 - KYC verification step for high-value withdrawals (TRD Open Questions #3 / #5).
 - Webhook handler that calls `markWithdrawalPaid` automatically (currently admin-only via `POST /admin/wallet/withdrawals/:id/mark-paid`).
 - Currency support beyond the MVP default `USD`. The schema accepts any 3-char currency string; multi-currency conversion, FX, and per-user currency preference are not built.
@@ -64,10 +64,10 @@ Provide a processor-agnostic wallet ledger so the eventual funding-rail decision
 1. Traveler calls POST /me/wallet/withdrawals with Idempotency-Key and body { amount, currency, campaignId? }.
 2. IdempotencyKeyGuard validates the header.
 3. WalletService.requestWithdrawal verifies balance = amount (422 if insufficient) and currency match (422 if mismatch).
-4. WithdrawalRequest row created with status=requested, high_value_threshold=null. Balance is NOT debited — debit waits on mark-paid.
+4. WithdrawalRequest row created with status=requested, high_value_threshold=null. Balance is NOT debited ï¿½ debit waits on mark-paid.
 5. Admin reviews via PATCH /admin/wallet/withdrawals/:id/review with { decision: 'approved' | 'rejected', reason? }.
    - Only status=requested can transition; any other status returns 422.
-   - Approved: status ? approved. Balance still NOT debited (deliberate design — see Edge Cases).
+   - Approved: status ? approved. Balance still NOT debited (deliberate design ï¿½ see Edge Cases).
    - Rejected: status ? rejected, rejectionReason stored.
 6. When the (TBD) processor confirms the external transfer, its webhook handler calls POST /admin/wallet/withdrawals/:id/mark-paid (or the equivalent internal call) with Idempotency-Key.
    - WalletService.markWithdrawalPaid verifies status=approved (422 otherwise).
@@ -90,28 +90,28 @@ Provide a processor-agnostic wallet ledger so the eventual funding-rail decision
    f. Create the WalletTransaction row (direction: credit, type: donation_received) with the idempotency key.
    g. Increment Campaign.raisedAmount.
    h. Update the Donation row to set wallet_transaction_id.
-4. If a wallet transaction with the same idempotencyKey already exists, return { donation, transaction } referencing the existing row — no double-write.
+4. If a wallet transaction with the same idempotencyKey already exists, return { donation, transaction } referencing the existing row ï¿½ no double-write.
 5. No HTTP endpoint exposes recordDonation. The public donation surface (the processor-specific path) is built alongside the real provider.
 ```
 
 ## API Endpoints
 
-### Traveler / Agency — wallet.controller.ts, @Controller('me/wallet')
+### Traveler / Agency ï¿½ wallet.controller.ts, @Controller('me/wallet')
 
 | Method | Path | Auth | Summary | Idempotency-Key |
 |---|---|---|---|---|
-| GET | /me/wallet | @RequireRole(traveler, agency) | Get my wallet (auto-creates on first call). | — |
-| GET | /me/wallet/transactions | @RequireRole(traveler, agency) | List my transactions, cursor-paginated, optional `?type=` filter. | — |
-| GET | /me/wallet/withdrawals | @RequireRole(traveler, agency) | List my withdrawal requests, cursor-paginated. | — |
+| GET | /me/wallet | @RequireRole(traveler, agency) | Get my wallet (auto-creates on first call). | ï¿½ |
+| GET | /me/wallet/transactions | @RequireRole(traveler, agency) | List my transactions, cursor-paginated, optional `?type=` filter. | ï¿½ |
+| GET | /me/wallet/withdrawals | @RequireRole(traveler, agency) | List my withdrawal requests, cursor-paginated. | ï¿½ |
 | POST | /me/wallet/withdrawals | @RequireRole(traveler, agency) | Request a withdrawal (status=requested, balance unchanged). | required |
-| GET | /me/wallet/withdrawals/:id | @RequireRole(traveler, agency) | Get one of my withdrawal requests (404 on another user's). | — |
+| GET | /me/wallet/withdrawals/:id | @RequireRole(traveler, agency) | Get one of my withdrawal requests (404 on another user's). | ï¿½ |
 
-### Super Admin — admin-wallet.controller.ts, @Controller('admin/wallet')
+### Super Admin ï¿½ admin-wallet.controller.ts, @Controller('admin/wallet')
 
 | Method | Path | Auth | Summary | Idempotency-Key |
 |---|---|---|---|---|
-| GET | /admin/wallet/withdrawals | @RequirePlatformRole(super_admin) | List all withdrawal requests across the platform, optional `?status=` filter, cursor-paginated, includes user email/username. | — |
-| GET | /admin/wallet/withdrawals/:id | @RequirePlatformRole(super_admin) | Get one withdrawal request detail (includes user info). | — |
+| GET | /admin/wallet/withdrawals | @RequirePlatformRole(super_admin) | List all withdrawal requests across the platform, optional `?status=` filter, cursor-paginated, includes user email/username. | ï¿½ |
+| GET | /admin/wallet/withdrawals/:id | @RequirePlatformRole(super_admin) | Get one withdrawal request detail (includes user info). | ï¿½ |
 | PATCH | /admin/wallet/withdrawals/:id/review | @RequirePlatformRole(super_admin) | Approve or reject a `requested` withdrawal (`{ decision, reason? }`); status transitions to `approved` or `rejected`. | required |
 | POST | /admin/wallet/withdrawals/:id/mark-paid | @RequirePlatformRole(super_admin) | Mark an `approved` withdrawal as paid; writes the debit ledger row and decrements balance. MVP-only ops reconciliation; replaced by processor webhook. | required |
 | POST | /admin/wallet/wallets/:userId/credit | @RequirePlatformRole(super_admin) | Manually credit a user wallet (ops reconciliation); body `{ amount, currency, description? }`. | required |
@@ -151,7 +151,7 @@ withdrawal_requests (reworked)
   amount                DECIMAL
   currency              VARCHAR default: 'USD'
   status                ENUM: requested | approved | rejected | paid default: requested
-  high_value_threshold  DECIMAL nullable  (stored, not yet enforced — see Open Questions)
+  high_value_threshold  DECIMAL nullable  (stored, not yet enforced ï¿½ see Open Questions)
   wallet_transaction_id UUID FK ? wallet_transactions UNIQUE nullable  (set on mark-paid)
   rejection_reason      VARCHAR nullable
   created_at            TIMESTAMP
@@ -161,7 +161,7 @@ donations (reworked)
   id                    UUID PK
   campaign_id           UUID FK ? campaigns
   donor_user_id         UUID FK ? users nullable
-  donor_display_name    VARCHAR nullable  (new — replaces anonymous gift rendering)
+  donor_display_name    VARCHAR nullable  (new ï¿½ replaces anonymous gift rendering)
   amount                DECIMAL
   currency              VARCHAR default: 'USD'
   is_anonymous          BOOLEAN default: false
@@ -182,7 +182,7 @@ payout_accounts          /// DEPRECATED / pending funding-rail decision
 stripe_webhook_events     /// DEPRECATED / pending funding-rail decision
 ```
 
-These are retained so the eventual processor integration (Stripe Connect, JazzCash, Easypaisa, bank gateway — TBD) has somewhere to land without a destructive migration. They carry no live code paths in this build.
+These are retained so RevenueCat in-app purchase integration has somewhere to land without a destructive migration. They carry no live code paths in this build.
 
 ### Schema changes from migration `20260904060000_wallet_ledger`
 
@@ -195,7 +195,7 @@ These are retained so the eventual processor integration (Stripe Connect, JazzCa
 
 ### Media / object-key structure
 
-Not applicable — the wallet ledger stores no media. All amounts are `DECIMAL` in the wallet account currency.
+Not applicable ï¿½ the wallet ledger stores no media. All amounts are `DECIMAL` in the wallet account currency.
 
 ## Interface Boundary
 
@@ -227,32 +227,38 @@ export const FUNDING_PROVIDER = Symbol('FUNDING_PROVIDER');
 ```
 
 - `WalletService` is injected with `IFundingProvider` via the `FUNDING_PROVIDER` token. The service never imports a concrete provider directly.
-- `ManualFundingProvider` (`src/modules/wallet/funding/manual-funding.provider.ts`) is the only current implementation. Its `deposit` always returns `{ ok: true }` — there is no external transfer.
-- When the client confirms the funding rail, the new provider (JazzCash / Easypaisa / bank gateway / Stripe Connect — TBD) implements the same `deposit` signature and is registered in `WalletModule`'s providers array. `WalletService` does not change.
+- `ManualFundingProvider` (`src/modules/wallet/funding/manual-funding.provider.ts`) is the only current implementation. Its `deposit` always returns `{ ok: true }` ï¿½ there is no external transfer.
+- When the client confirms the funding rail, the new provider RevenueCat in-app purchase implements the same `deposit` signature and is registered in `WalletModule`'s providers array. `WalletService` does not change.
 - The `name` field on the provider is included in every Pino audit log entry so the eventual real provider is identifiable in logs.
 
 ## Edge Cases
 
-- **Currency mismatch (422)** — Both `credit`/`debit` and `requestWithdrawal` check `account.currency !== params.currency` and throw `AppException.businessRule('Currency mismatch.')` (HTTP 422). MVP is single-currency `USD`; multi-currency conversion is not built.
-- **Insufficient balance (422)** — `debit` and `requestWithdrawal` both check `cachedBalance < amount` and throw `AppException.businessRule('Insufficient wallet balance.')` (HTTP 422). On `requestWithdrawal`, balance is unchanged because debit waits on `mark-paid`.
-- **Idempotency replay** — When a request carries an `Idempotency-Key` that already exists on a `WalletTransaction`, `_writeTransaction` returns the existing row instead of inserting a new one. Balance is unchanged. This is the deliberate behavior for both same-body and different-body replays — see the test `idempotency replay: same key + different body returns ORIGINAL transaction, NOT 409` in `test/wallet.e2e-spec.ts`. The unique constraint on `idempotency_key` is the database safety net; the service-layer short-circuit is the optimization.
-- **Status transition guards** — `reviewWithdrawal` rejects anything not in `requested` (422). `markWithdrawalPaid` rejects anything not in `approved` (422). `rejectWithdrawal` is invoked internally from `reviewWithdrawal` when `decision === 'rejected'`; it does not check the current status (the caller already did).
-- **Two-stamp design (debit on paid, not on approve)** — Approving a withdrawal only flips the status. The wallet is debited on `mark-paid`, when the (TBD) processor signals a successful external transfer. This means a reversal between approve and paid cannot strand a negative balance. The MVP exposes `mark-paid` as an admin-only ops endpoint precisely because there is no real processor yet; when the processor lands, that endpoint is removed and `markWithdrawalPaid` is called only from the webhook handler.
-- **Deactivated user** — `adminCredit` returns 404 (not 403) when the target user is `!isActive`, matching the campaign-private pattern of not leaking existence.
-- **Cross-user withdrawal detail** — `getWithdrawalDetail` returns 404 when a traveler/agency tries to read another user's withdrawal (not 403), again matching the no-leak pattern.
-- **Single-currency MVP** — Default currency is `USD` on `WalletAccount` and every DTO. The schema accepts any 3-char currency string, but multi-currency conversion, FX rates, and per-user currency preference are not built.
-- **Audit-log emission contract** — Every state change emits a single structured Pino log line with an `audit` discriminator field (`wallet.transaction`, `wallet.withdrawal.requested`, `wallet.withdrawal.reviewed`, `wallet.withdrawal.paid`) and the actor id, withdrawal id, amount, currency, idempotency key, and provider name. The `audit` field is the stable key for log queries.
-- **`recordDonation` is internal-only** — No HTTP endpoint exposes it. The processor webhook handler is the only caller in the eventual real flow. The 41 unit tests on `recordDonation` cover the internal service hook; E2E coverage of the public donation surface lands with the real processor.
-- **`requestWithdrawal` does not enforce idempotency at the service layer** — The `IdempotencyKeyGuard` validates the header is present (8-128 chars), but the service currently ignores the key and `withdrawal_requests` has no `idempotency_key` column. A replay of the same key creates a duplicate row. This is a known gap; either the column is added and the service is updated to short-circuit on the key, or duplicate-detection moves upstream to the client. Tracked as a follow-up — not blocking the MVP because the only money-moving caller in this build is `adminCredit`, which IS idempotent.
-- **Admin mark-paid replay** — Calling `mark-paid` on an already-`paid` withdrawal returns 422 (status guard fires). The ledger is not double-debited because `_writeTransaction` short-circuits on the idempotency key.
+- **Currency mismatch (422)** ï¿½ Both `credit`/`debit` and `requestWithdrawal` check `account.currency !== params.currency` and throw `AppException.businessRule('Currency mismatch.')` (HTTP 422). MVP is single-currency `USD`; multi-currency conversion is not built.
+- **Insufficient balance (422)** ï¿½ `debit` and `requestWithdrawal` both check `cachedBalance < amount` and throw `AppException.businessRule('Insufficient wallet balance.')` (HTTP 422). On `requestWithdrawal`, balance is unchanged because debit waits on `mark-paid`.
+- **Idempotency replay** ï¿½ When a request carries an `Idempotency-Key` that already exists on a `WalletTransaction`, `_writeTransaction` returns the existing row instead of inserting a new one. Balance is unchanged. This is the deliberate behavior for both same-body and different-body replays ï¿½ see the test `idempotency replay: same key + different body returns ORIGINAL transaction, NOT 409` in `test/wallet.e2e-spec.ts`. The unique constraint on `idempotency_key` is the database safety net; the service-layer short-circuit is the optimization.
+- **Status transition guards** ï¿½ `reviewWithdrawal` rejects anything not in `requested` (422). `markWithdrawalPaid` rejects anything not in `approved` (422). `rejectWithdrawal` is invoked internally from `reviewWithdrawal` when `decision === 'rejected'`; it does not check the current status (the caller already did).
+- **Two-stamp design (debit on paid, not on approve)** ï¿½ Approving a withdrawal only flips the status. The wallet is debited on `mark-paid`, when the RevenueCat in-app purchase processor signals a successful external transfer. This means a reversal between approve and paid cannot strand a negative balance. The MVP exposes `mark-paid` as an admin-only ops endpoint precisely because there is no real processor yet; when the processor lands, that endpoint is removed and `markWithdrawalPaid` is called only from the webhook handler.
+- **Deactivated user** ï¿½ `adminCredit` returns 404 (not 403) when the target user is `!isActive`, matching the campaign-private pattern of not leaking existence.
+- **Cross-user withdrawal detail** ï¿½ `getWithdrawalDetail` returns 404 when a traveler/agency tries to read another user's withdrawal (not 403), again matching the no-leak pattern.
+- **Single-currency MVP** ï¿½ Default currency is `USD` on `WalletAccount` and every DTO. The schema accepts any 3-char currency string, but multi-currency conversion, FX rates, and per-user currency preference are not built.
+- **Audit-log emission contract** ï¿½ Every state change emits a single structured Pino log line with an `audit` discriminator field (`wallet.transaction`, `wallet.withdrawal.requested`, `wallet.withdrawal.reviewed`, `wallet.withdrawal.paid`) and the actor id, withdrawal id, amount, currency, idempotency key, and provider name. The `audit` field is the stable key for log queries.
+- **`recordDonation` is internal-only** ï¿½ No HTTP endpoint exposes it. The processor webhook handler is the only caller in the eventual real flow. The 41 unit tests on `recordDonation` cover the internal service hook; E2E coverage of the public donation surface lands with the real processor.
+- **`requestWithdrawal` does not enforce idempotency at the service layer** ï¿½ The `IdempotencyKeyGuard` validates the header is present (8-128 chars), but the service currently ignores the key and `withdrawal_requests` has no `idempotency_key` column. A replay of the same key creates a duplicate row. This is a known gap; either the column is added and the service is updated to short-circuit on the key, or duplicate-detection moves upstream to the client. Tracked as a follow-up ï¿½ not blocking the MVP because the only money-moving caller in this build is `adminCredit`, which IS idempotent.
+- **Admin mark-paid replay** ï¿½ Calling `mark-paid` on an already-`paid` withdrawal returns 422 (status guard fires). The ledger is not double-debited because `_writeTransaction` short-circuits on the idempotency key.
 
-## Open Questions (deferred — not blocking)
+## Open Questions (deferred ï¿½ not blocking)
 
 | # | Question | Resolution for this feature |
 |---|---|---|
 | #3 | High-value withdrawal threshold | `withdrawal_requests.high_value_threshold` column is reserved on the model for the future; no service code reads it yet. Revisit when the funding rail is confirmed and the KYC step (#3/#5) lands. |
 | #4 | Refund-after-withdrawal / clawback | Not built. When the funding rail lands, define whether `mark-paid` reversal creates a credit ledger row + status `refunded` (new enum value) or a separate `refunds` table. Schema-agnostic for now. |
 | #5 | "Verification" overloaded across 3 concepts | The withdrawal-eligibility gate (campaign-verification, identity-verification, verified-campaign-badge) is not implemented in this pass. Service-level hook will live in `requestWithdrawal` once the verification model exists. |
-| #27 | Platform fee on donations vs. commission | Full donation amount is credited to the creator's wallet; no fee is deducted. When the funding rail lands, the provider's `deposit` result can include a `fee` field that the service splits off into a separate `commission` ledger row. |
+| #27 | Platform fee on donations vs. commission | RevenueCat transactions are subject to platform fees (Apple/Google 30%, RevenueCat fee). The donation amount credited to the creator's wallet is net of platform fees. The `deposit` result includes a `fee` field that the service splits off into a separate `commission` ledger row. |
 
-Note: TRD Open Question #28 (subscription tier purchase channel) is explicitly unrelated to this feature — it concerns agency subscription billing, not wallet/donation flows. The working assumption per AGENTS.md is a web-based Stripe Billing page.
+
+
+
+
+
+
+

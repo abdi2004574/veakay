@@ -2,7 +2,7 @@
 
 **Status:** Read-only strategy. No implementation files inspected or edited.
 **Date:** 2026-09-10
-**Scope:** Canonical admin panel integration — unit tests for API clients/state/components, Playwright auth and core admin workflows, backend contract checks.
+**Scope:** Canonical admin panel integration ï¿½ unit tests for API clients/state/components, Playwright auth and core admin workflows, backend contract checks.
 
 ---
 
