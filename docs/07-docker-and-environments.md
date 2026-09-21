@@ -1,11 +1,11 @@
-# Docker and Environments
+﻿# Docker and Environments
 
 ## Environments
 
 ```text
 development   → local machine, docker-compose, MinIO, MailHog, Stripe test mode
 test          → CI or local, separate test database and Redis logical DB, real MailHog
-production    → server or container platform, AWS S3, production SMTP provider (not yet chosen), Stripe live mode
+production    → server or container platform, AWS S3, Amazon SES, Stripe live mode
 ```
 
 ## Ports — deliberately uncommon
@@ -192,9 +192,9 @@ MAIL_FROM=noreply@veakay.com
 MAIL_SECURE=false
 MAILHOG_UI_PORT=58025
 
-# Email — production SMTP provider (not yet chosen, ask before setting this up)
-# MailService uses nodemailer's generic SMTP transport, so any SMTP-compatible provider
-# just needs these four values, no code change and no vendor-specific SDK required.
+# Email — Amazon SES (production)
+# MailService uses nodemailer's generic SMTP transport, so SES just needs these
+# four values (obtained from the AWS console), no code change and no vendor-specific SDK required.
 # MAIL_HOST=
 # MAIL_PORT=
 # MAIL_USER=
@@ -273,7 +273,7 @@ npm run prisma:studio    → open Prisma Studio
 Only environment variables change, no code changes:
 
 ```text
-MAIL_HOST=<production SMTP host>      (was localhost, provider not yet chosen)
+MAIL_HOST=<Amazon SES SMTP host>      (was localhost, MailHog)
 S3_ENDPOINT=https://s3.amazonaws.com  (was http://localhost:57900)
 S3_BUCKET=veakay-prod                 (was veakay-dev)
 S3_FORCE_PATH_STYLE=false             (was true)

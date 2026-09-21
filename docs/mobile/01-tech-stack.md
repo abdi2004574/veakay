@@ -1,4 +1,4 @@
-# Mobile Tech Stack
+﻿# Mobile Tech Stack
 
 ## Framework — Finalized: Expo, not bare React Native
 
@@ -81,9 +81,9 @@ Styling                     → NativeWind (Tailwind for React Native) — figma
                               instead of rewriting every screen's styling from scratch as StyleSheet objects
 Forms and validation         → React Hook Form + Zod — minimal re-renders, schema-based validation that
                                 mirrors the backend's DTO validation conceptually
-Audio/video calling            → whichever vendor is chosen for ICallProvider on the backend side, its client SDK
-                                  (not yet chosen, see 00-overview.md and \.\./features/wallet-ledger.md);
-                                  confirm it has (or can get) an Expo config plugin before locking it in
+Audio/video calling            → Daily.co on the backend side, its client SDK
+                                  (see 00-overview.md and \.\./features/wallet-ledger.md);
+                                  confirm it has an Expo config plugin before locking it in
 ```
 
 ## Testing

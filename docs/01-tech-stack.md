@@ -1,4 +1,4 @@
-# Tech Stack (Backend)
+﻿# Tech Stack (Backend)
 
 ## Core Framework
 
@@ -47,9 +47,9 @@ Custom RBAC as NestJS Guards. See `04-authentication-and-rbac.md` for the full d
 ## OTP and Email
 
 - **MailHog** — local development email catcher (SMTP server, UI at localhost:8025).
-- **Generic SMTP** — production email delivery (OTP, receipts, transactional emails), via `nodemailer`'s SMTP transport rather than a vendor-specific SDK/API. Which SMTP provider (SendGrid's SMTP relay, Amazon SES, Mailgun, Postmark, a company mail server, etc.) is not fixed in code, it's just SMTP host/port/credentials in environment variables. Ask before this is actually decided, don't assume a default.
+- **Generic SMTP** — production email delivery (OTP, receipts, transactional emails), via `nodemailer`'s SMTP transport rather than a vendor-specific SDK/API. **Amazon SES** is the chosen provider: cost-effective at low volume with a free tier, natively integrated with AWS (shared IAM/Role ecosystem with S3 and other services), scales transparently, and is provider-agnostic via SMTP credentials (no vendor SDK required).
 
-Switching from MailHog to a production SMTP provider is a single set of environment variable changes, no code changes, since MailHog itself is just a local SMTP server.
+Switching from MailHog to Amazon SES (or any SMTP provider) is a single set of environment variable changes, no code changes, since MailHog itself is just a local SMTP server.
 
 ## Real-Time
 
@@ -95,7 +95,7 @@ See `features/wallet-ledger.md` for the full payment architecture.
 
 ## Video Calling
 
-**Vendor not yet chosen.** The TRD requires "Audio & Video Calls with Agency" (traveler-facing) and the mirrored requirement on the agency side, but never names a vendor, unlike Miralynk which explicitly specifies Zoom Video SDK. Wrap whatever is chosen behind `ICallProvider` so the choice is swappable without touching ChatModule.
+**Daily.co.** The TRD requires "Audio & Video Calls with Agency" (traveler-facing) and the mirrored requirement on the agency side. Daily.co provides SDKs for iOS and Android (via `react-native-daily`), a REST API for session creation and management on the backend, and handles the actual media transport client-side. The backend role is limited to session creation/metadata via `CallService` behind `ICallProvider` so the choice is swappable without touching ChatModule.
 
 ## Logging
 

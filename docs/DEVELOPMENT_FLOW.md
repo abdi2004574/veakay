@@ -1,4 +1,4 @@
-# Veakay Development Flow
+﻿# Veakay Development Flow
 
 Every feature or bug fix, no matter how small, follows these steps in order, in every repo. No steps skipped. Adapted from the team's Miralynk development flow, with paths and provider specifics changed to match Veakay's actual setup.
 
@@ -10,7 +10,7 @@ Write DTOs with `@ApiProperty` decorators and controller endpoints with `@ApiOpe
 
 ### 2. Unit tests
 
-Write `*.service.spec.ts` files. Mock every external provider the service touches, not just Prisma: Redis, Stripe, SMTP/mail, Firebase, storage (S3/MinIO), and the call vendor once one exists. Cover the happy path, all error cases, and edge cases. Matches `10-testing-strategy.md`.
+Write `*.service.spec.ts` files. Mock every external provider the service touches, not just Prisma: Redis, Stripe, Amazon SES, Firebase, storage (S3/MinIO), and the Daily.co (behind ICallProvider). Cover the happy path, all error cases, and edge cases. Matches `10-testing-strategy.md`.
 
 ### 3. E2E tests
 

@@ -1,4 +1,4 @@
-# Mobile Error Handling and Resilience
+﻿# Mobile Error Handling and Resilience
 
 This is a standing requirement, not a per-feature decision: every screen and every network call must have deliberate error handling, no silent failures, no unhandled promise rejections, no bare try/catch that swallows an error without surfacing or logging it.
 
@@ -56,7 +56,7 @@ Mutations that DO move money (donations, withdrawals, subscription changes):
 
 ### 4. Crash Reporting and Error Logging
 
-A crash reporting service (Sentry or equivalent) captures:
+A crash reporting service (Sentry) captures:
 - Uncaught JS exceptions and unhandled promise rejections.
 - Errors caught by `ErrorBoundary` components.
 - API errors with `code = INTERNAL_ERROR` (these represent unexpected backend states worth investigating, unlike `VALIDATION_ERROR` or `NOT_FOUND` which are normal user-facing outcomes, not bugs).

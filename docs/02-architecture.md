@@ -1,4 +1,4 @@
-# Architecture
+﻿# Architecture
 
 ## Architectural Pattern
 
@@ -164,9 +164,9 @@ PATCH /api/v1/admin/agencies/:id/reject → status=rejected (resubmission flow i
 
 ```text
 Stripe (Connect + Billing)  → PaymentsService → donations, payouts, commission, subscription billing
-SMTP (provider TBD)          → MailService → transactional emails, MailHog locally
+Amazon SES          → MailService → transactional emails, MailHog locally
 Firebase Admin SDK          → NotificationsService → push delivery
-Call vendor (TBD)           → CallService (behind ICallProvider) → traveler-agency audio/video
+Daily.co           → CallService (behind ICallProvider) → traveler-agency audio/video
 MinIO / AWS S3              → StorageService → presigned URL generation
 ```
 
@@ -175,7 +175,7 @@ MinIO / AWS S3              → StorageService → presigned URL generation
 ```text
 Development   → docker-compose (NestJS + PostgreSQL + Redis + MinIO + MailHog)
 Test          → docker-compose.test (separate PostgreSQL + Redis instances)
-Production    → single server or container platform, AWS S3, production SMTP provider (TBD), real Stripe/Firebase/call vendor
+Production    → single server or container platform, AWS S3, Amazon SES, real Stripe/Firebase/Daily.co
 ```
 
 ## Scalability Notes for Post-Launch

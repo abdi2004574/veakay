@@ -1,4 +1,4 @@
-# Overview
+﻿# Overview
 
 ## Product Summary
 
@@ -12,7 +12,7 @@ The backend provides one secure API platform for:
 - Web admin dashboard users: super admins managing the platform.
 - Background workers: notification dispatch, badge/milestone checks, campaign lifecycle checks, scheduled reports, cleanup jobs.
 - Real-time clients: Socket.io connections for chat (friend, group, and agency).
-- External integrations: Stripe (Connect + Billing), a generic SMTP provider (MailHog locally, production SMTP provider not yet chosen), Firebase Admin SDK, MinIO/S3, a still-undecided audio/video calling vendor.
+- External integrations: Stripe (Connect + Billing), generic SMTP via Amazon SES (MailHog locally), Firebase Admin SDK, MinIO/S3, Daily.co for audio/video calls (behind ICallProvider).
 
 ## Architectural Direction
 
@@ -50,8 +50,8 @@ NestJS Backend (single codebase)
    _____|______________________________
   |          |           |            |
 PostgreSQL  Redis      MinIO/S3   External APIs
-(primary)  (cache,    (media      (Stripe, SMTP,
-           sessions,  storage)    Firebase, call vendor TBD)
+(primary)  (cache,    (media      (Stripe, SES,
+           sessions,  storage)    Firebase, Daily.co)
            BullMQ,
            pub/sub)
         ^
@@ -98,4 +98,4 @@ See `Veakay_TRD_Open_Questions.md` for the full, verified list (28 items with ex
 - Whether a Package is a reusable catalog or a single-campaign offer (open question #2) is undecided and determines the Campaign-Package schema relationship. Resolve before building `PackagesModule`.
 - Whether the agency subscription (Basic/Premium/Featured) is sold via native in-app purchase or a web billing page (open question #28) determines whether Apple/Google IAP integration is needed at all. Default assumption: web billing via Stripe, no IAP.
 - Refund-after-withdrawal handling (open question #4) is a real solvency question, not just a workflow detail.
-- The audio/video calling vendor is not named anywhere in the TRD. Wrap it behind an interface so the choice doesn't lock in the architecture.
+- The audio/video calling vendor uses Daily.co, wrapped behind `ICallProvider` so the choice remains swappable without touching ChatModule.

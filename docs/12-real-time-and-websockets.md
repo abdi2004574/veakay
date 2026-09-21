@@ -1,4 +1,4 @@
-# Real-Time and WebSockets
+﻿# Real-Time and WebSockets
 
 ## Overview
 
@@ -101,7 +101,7 @@ chat.error
 
 ## Audio/Video Calling
 
-Not part of the Socket.io chat gateway. The TRD requires "Audio & Video Calls with Agency" but names no vendor. This is handled by a separate `CallService` behind `ICallProvider`, whichever SDK is chosen (the vendor typically handles the actual media transport client-side; the backend's role is limited to session creation/metadata, mirroring how Miralynk uses Zoom API for the same purpose).
+Not part of the Socket.io chat gateway. The TRD requires Audio and Video Calls with Agency. Handled by a separate `ICallProvider`, using **Daily.co** (the vendor handles the actual media transport client-side via its SDKs; the backend role is limited to session creation/metadata via Daily's REST API, mirroring how Miralynk uses Zoom API for the same purpose).
 
 ## Testing
 

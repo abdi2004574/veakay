@@ -1,4 +1,4 @@
-# Notifications and Push
+﻿# Notifications and Push
 
 ## Overview
 
@@ -113,7 +113,7 @@ PATCH /api/v1/me/fcm-token                  → update FCM token
 
 ## Email Channel (Financial Events)
 
-Donation receipts, milestone confirmations, and password-change confirmations are also sent via email (SMTP, MailHog locally / production provider TBD), not just push, matching a gap found during the TRD review where financial events had no email channel described at all, only push.
+Donation receipts, milestone confirmations, and password-change confirmations are also sent via email (SMTP, MailHog locally / Amazon SES), not just push, matching a gap found during the TRD review where financial events had no email channel described at all, only push.
 
 ## Admin Broadcast
 

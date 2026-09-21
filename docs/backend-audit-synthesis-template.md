@@ -85,8 +85,8 @@ Sequenced work items derived from the audit. Each wave should be **independently
 
 ### Wave 4 — Polish + Compliance
 - [ ] Open-question resolution pass (`docs/Veakay_TRD_Open_Questions.md`)
-- [ ] Crash reporting vendor integration
-- [ ] Production SMTP provider selection + integration
+- [ ] Sentry integration
+- [ ] Amazon SES SMTP integration
 
 ---
 

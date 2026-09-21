@@ -38,7 +38,7 @@ All roles:
 3. Backend hashes password with bcrypt (12 rounds).
 4. Backend creates user row with role=traveler, is_email_verified=false.
 5. Backend generates 6-digit OTP, hashes it, stores in otp_codes with type=email_verify.
-6. Backend sends verification email via SMTP (MailHog in dev, production provider TBD).
+6. Backend sends verification email via SMTP (MailHog in dev, Amazon SES).
 7. Backend returns user id and a message to check email.
 8. Client submits OTP to POST /api/v1/auth/verify-email.
 9. Backend verifies OTP hash, marks user is_email_verified=true, deletes OTP row.

@@ -1,4 +1,4 @@
-# Engineering Principles
+﻿# Engineering Principles
 
 ## Overview
 
@@ -27,11 +27,11 @@ Controllers handle HTTP only. Services handle business logic only. Prisma querie
 
 ```text
 IStorageProvider    → MinioStorageProvider (dev) → S3StorageProvider (prod)
-ICallProvider       → whichever audio/video vendor is chosen, swappable without touching ChatModule
+ICallProvider       → Daily.co, swappable without touching ChatModule
 INotificationProvider → FirebasePushProvider
 ```
 
-When a new storage backend or call vendor is needed, a new class implementing the interface is added. The consuming service never changes.
+When a new storage backend is needed, a new class implementing the interface is added. The consuming service never changes. (Daily.co already implements ICallProvider; replacing it would mean a new ICallProvider implementation, not a different vendor choice.)
 
 ### Liskov Substitution
 
@@ -186,7 +186,7 @@ This same idempotency requirement extends to every endpoint that moves money, no
 
 ### Consistent Error Handling Everywhere, Not Just Business Logic
 
-"Proper error handling everywhere" is a standing project requirement, not a per-feature judgment call. Concretely: every service method that can fail has a typed, deliberate failure path (a specific NestJS exception, not a generic 500); every controller/gateway/job handler that touches an external provider (Stripe, the SMTP provider, Firebase, the call vendor) wraps it so a provider outage degrades gracefully (e.g. a failed push notification does not fail the request that triggered it) instead of surfacing as an unhandled exception; and no `catch` block is empty, at minimum it logs via Pino with enough context to debug, per `09-logging-and-audit.md`.
+"Proper error handling everywhere" is a standing project requirement, not a per-feature judgment call. Concretely: every service method that can fail has a typed, deliberate failure path (a specific NestJS exception, not a generic 500); every controller/gateway/job handler that touches an external provider (Stripe, Amazon SES, Firebase, Daily.co) wraps it so a provider outage degrades gracefully (e.g. a failed push notification does not fail the request that triggered it) instead of surfacing as an unhandled exception; and no `catch` block is empty, at minimum it logs via Pino with enough context to debug, per `09-logging-and-audit.md`.
 
 ### Secrets Never in Code
 

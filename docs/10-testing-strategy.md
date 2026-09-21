@@ -1,4 +1,4 @@
-# Testing Strategy
+﻿# Testing Strategy
 
 ## Goal
 
@@ -36,7 +36,7 @@ Examples:
 
 ### E2E Tests
 
-Full HTTP request → response flows against a real test PostgreSQL and Redis. External providers (Stripe, Firebase, the SMTP provider, call vendor) are mocked. File convention: `test/{feature}.e2e-spec.ts`.
+Full HTTP request → response flows against a real test PostgreSQL and Redis. External providers (Stripe, Amazon SES, Firebase, Daily.co) are mocked. File convention: `test/{feature}.e2e-spec.ts`.
 
 Examples:
 
@@ -58,7 +58,7 @@ Separately runnable, not part of the standard `npm run test` suite:
 
 ```text
 npm run test:storage      → real MinIO upload, download, metadata verification
-npm run test:email        → real MailHog SMTP delivery (development only)
+npm run test:email        → real MailHog SMTP delivery (dev); Amazon SES mocked in tests
 ```
 
 ## Test Database Rules

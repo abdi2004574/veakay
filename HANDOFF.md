@@ -86,13 +86,21 @@ See `docs/Veakay_TRD_Open_Questions.md` (28 items, verified line-by-line against
 
 ## Known Issues
 
-1. **OTP delivery to MailHog**: OTP emails are correctly sent to MailHog (localhost:58025), not to a real SMTP inbox. `.env` had a misleading "Production SMTP (Gmail)" comment that confused the initial tester - fixed by correcting the comment. `.env.example` had duplicate `MAIL_HOST`/`MAIL_PORT` keys (production section shadowing the MailHog section) - fixed by merging into one section.
+1. **OTP delivery to MailHog**: OTP emails are correctly sent to MailHog (localhost:58025), not to a real SMTP inbox. `.env` had a misleading "Production SMTP (Gmail)" comment that confused the initial tester - fixed by correcting the comment. `.env.example` had duplicate `MAIL_HOST`/`MAIL_PORT` keys (production section shadowing the MailHog section) - fixed by merging into one section. **Production SMTP provider: Amazon SES** (provider-agnostic by design; host/port/credentials in env vars). Locally, MailHog + MinIO are confirmed.
 2. **Broken trip-request migration `20260903063549`**: was a no-op (entire SQL on one comment line) - removed; the corrected `20260903070425` migration is the canonical version.
 3. **Test DB was missing all 3 trip-request migrations**: applied via `prisma migrate deploy` after verifying the test database had none of the trip-request schema changes.
 
 4. **Backend E2E tests blocked - Docker Desktop/daemon not running**: PostgreSQL, Redis, MailHog, and MinIO containers are unavailable because Docker Desktop/daemon is not running on this environment. Unit tests (`npm run test:unit`) and TypeScript build (`npm run build`) pass. E2E tests (`npm run test:e2e`) cannot run without the dockerized infrastructure.
 5. **Mobile native builds blocked on Windows**: Android SDK, JAVA_HOME, and Xcode are not available in this Windows environment. JavaScript-level checks (typecheck, lint, Expo web build) pass, but `expo run:android` and `expo run:ios` cannot execute.
 
+
+## External Service Vendor Decisions
+
+The following external service vendors have been confirmed:
+
+- **Amazon SES** = production SMTP provider (transactional email: OTP delivery, receipts). Provider-agnostic by design; host/port/credentials configured via env vars. Locally: MailHog + MinIO.
+- **Daily.co** = audio/video calling vendor, wrapped behind the `ICallProvider` interface (per `src/common/interfaces/ICallProvider.ts`). Vendor choice swappable.
+- **Sentry** = crash reporting vendor (per docs/mobile/02-error-handling.md).
 
 ## Resolved Blockers (2026-09-12)
 
@@ -124,7 +132,7 @@ All three repos now build, type-check, and pass unit tests cleanly.
 ### Phase 3 - Stubs and Gaps
 - Firebase push notifications (mobile): no stub file, @react-native-firebase/app not in app.json â€” confirmed no action needed
 - RevenueCat webhook HMAC verification: fully implemented with Redis dedup
-- Sentry: removed from README Tech Stack (not installed)
+- Sentry: adopted as crash reporting vendor (per docs/mobile/02-error-handling.md)
 - Agency verification flow: end-to-end verified (register â†’ OTP â†’ admin approve â†’ status=approved â†’ badge assigned)
 
 ### Phase 4 - Testing

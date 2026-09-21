@@ -1,4 +1,4 @@
-# Auth and Onboarding
+﻿# Auth and Onboarding
 
 ## Goal
 
@@ -60,7 +60,7 @@ Store as two lookup enums (`DestinationType`, `TravelStyle`), not free text, so 
 3. Backend hashes password (bcrypt, 12 rounds).
 4. Backend creates user with role=traveler, isEmailVerified=false.
 5. Backend generates 6-digit OTP, hashes and stores in otp_codes (10-minute expiry).
-6. Backend sends OTP email via SMTP (MailHog in dev, production provider not yet chosen).
+6. Backend sends OTP email via SMTP (MailHog in dev, Amazon SES).
 7. Returns { userId, message: "Check your email" }.
 8. POST /api/v1/auth/verify-email { userId, otp }
 9. Backend verifies OTP hash, checks expiry (10 min) and attempts (max 5).
