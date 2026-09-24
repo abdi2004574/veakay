@@ -17,7 +17,7 @@ Built by reading, in full: the TRD (688 lines), the section-by-section gap log (
 | 3 | Chat / Messaging | ? done |
 | 4 | Explore, Agency Directory & Reviews | ? done (scope narrowed to what's real - see below) |
 | 5 | Campaign Creation & Management | ? done (scope narrowed to what's real - see below) |
-| 6 | Payments, Wallet & Withdrawal | ? wallet ledger core built - ? manual-donation demo (backend + mobile) - ?? external funding rail pending client decision + open questions #3/#4/#5/#27 |
+| 6 | Payments, Wallet & Withdrawal | ? wallet ledger core built - ? manual-donation demo (backend + mobile) - ? RevenueCat funding provider implemented (admin-credit wire) - ?? public donation webhook + platform-fee split (#27) pending; open Qs #3/#4/#5 |
 | 7 | Traveler Settings & Account | ? done |
 | 8 | Friends & Group Trips (remainder) | ? done |
 | 9 | Agency Dashboard & Business Tools | ? All sub-scopes built - Packages, Trip Requests, Dashboard KPIs/trends/charts, Revenue ledger/CSV export, Staff management, Invoices, Settings, Dynamic pricing, RevenueCat webhook (671 backend unit tests pass) |

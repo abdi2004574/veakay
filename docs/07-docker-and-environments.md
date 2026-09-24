@@ -279,4 +279,5 @@ S3_BUCKET=veakay-prod                 (was veakay-dev)
 S3_FORCE_PATH_STYLE=false             (was true)
 STRIPE_SECRET_KEY=sk_live_...          (was unset — Payments module not built yet)
 CORS_ORIGINS=https://app.veakay.com,https://admin.veakay.com   (required in production, main.ts enforces this)
+- FUNDING_PROVIDER=revenuecat (local default is 'manual'); REVENUECAT_PROJECT_ID, REVENUECAT_API_KEY, and REVENUECAT_ALLOW_SANDBOX are read by the wallet funding provider when revenuecat is selected.
 ```

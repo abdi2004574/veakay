@@ -19,12 +19,12 @@ Provide a processor-agnostic wallet ledger so the eventual RevenueCat in-app pur
 
 ## Later Scope
 
-- RevenueCat in-app purchase donation flow (NON_SUBSCRIPTION_PURCHASE webhook handling, net-of-platform-fee wallet credit) as a concrete `IFundingProvider`.
+- Public donation flow via the RevenueCat `NON_SUBSCRIPTION_PURCHASE` webhook handler (net-of-platform-fee wallet credit + platform-fee split per #27). The admin-credit verify path (`RevenueCatFundingProvider.deposit`) is already implemented and wired to `adminCredit`; the public donation webhook is the still-later item.
 - Commission splitting on the booking-payment wallet type (enum value reserved, no service method writes it today).
 - Refund-after-withdrawal handling (TRD Open Question #4 � see Open Questions table).
 - High-value threshold enforcement (TRD Open Question #3 � `withdrawal_requests.high_value_threshold` column is kept on the model for the future; no gate reads it today).
 - Public donation endpoint that calls the real processor (the processor-specific surface stays stubbed today; the seam is `IFundingProvider`).
-- Agency subscription billing (TRD Open Question #28 � explicitly out of scope for this feature; web-based Stripe Billing is the working assumption per AGENTS.md).
+- Agency subscription billing (TRD Open Question #28 � RESOLVED 2026-09-12: agency subscriptions are RevenueCat native IAP (not web Stripe Billing)).
 - KYC verification step for high-value withdrawals (TRD Open Questions #3 / #5).
 - Webhook handler that calls `markWithdrawalPaid` automatically (currently admin-only via `POST /admin/wallet/withdrawals/:id/mark-paid`).
 - Currency support beyond the MVP default `USD`. The schema accepts any 3-char currency string; multi-currency conversion, FX, and per-user currency preference are not built.
@@ -228,7 +228,7 @@ export const FUNDING_PROVIDER = Symbol('FUNDING_PROVIDER');
 
 - `WalletService` is injected with `IFundingProvider` via the `FUNDING_PROVIDER` token. The service never imports a concrete provider directly.
 - `ManualFundingProvider` (`src/modules/wallet/funding/manual-funding.provider.ts`) is the only current implementation. Its `deposit` always returns `{ ok: true }` � there is no external transfer.
-- When the client confirms the funding rail, the new provider RevenueCat in-app purchase implements the same `deposit` signature and is registered in `WalletModule`'s providers array. `WalletService` does not change.
+- `RevenueCatFundingProvider` (`src/modules/wallet/funding/revenue-cat-funding.provider.ts`) is implemented and registered in `WalletModule`; `WalletService.adminCredit` is the only caller of `IFundingProvider.deposit()` in this build. It verifies a RevenueCat purchase via the REST API v2 projects endpoint and is selected at runtime by `FUNDING_PROVIDER=revenuecat`. `ManualFundingProvider` remains for ops-only reconciliation (no external charge).
 - The `name` field on the provider is included in every Pino audit log entry so the eventual real provider is identifiable in logs.
 
 ## Edge Cases
