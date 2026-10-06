@@ -4,6 +4,7 @@ import { ROUTES, APP_TITLE } from "@/lib/constants";
 import Navigation from "./Navigation";
 import { useUiStore } from "@/stores/ui-store";
 import { useAuthStore } from "@/stores/auth-store";
+import { useLogout } from "@/features/auth/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { GradientButton } from "@/components/ui/gradient-button";
@@ -12,11 +13,14 @@ export default function Sidebar() {
   const { sidebarCollapsed, toggleSidebar } = useUiStore();
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
-  const logout = useAuthStore((s) => s.logout);
+  const logoutMutation = useLogout();
 
   const handleLogout = () => {
-    logout();
-    navigate(ROUTES.LOGIN, { replace: true });
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        navigate(ROUTES.LOGIN, { replace: true });
+      },
+    });
   };
 
   return (
@@ -93,6 +97,7 @@ export default function Sidebar() {
               size="sm"
               className="w-full"
               onClick={handleLogout}
+              disabled={logoutMutation.isPending}
             >
               Log out
             </GradientButton>

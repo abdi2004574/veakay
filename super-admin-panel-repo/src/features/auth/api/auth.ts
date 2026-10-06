@@ -49,15 +49,17 @@ export async function refreshAccessToken(
     method: "POST",
     body: JSON.stringify({ refreshToken }),
   });
-  return {
-    user: {
-      id: "",
-      email: "",
-      displayName: "",
-      role: "",
-      isEmailVerified: false,
-      onboardingComplete: false,
+
+  // Fetch user data from /auth/me
+  const meRes = await apiRequest<{ user: AuthResponse["user"] }>("/auth/me", {
+    method: "GET",
+    headers: {
+      Authorization: "Bearer " + res.data.accessToken,
     },
+  });
+
+  return {
+    user: meRes.data.user,
     accessToken: res.data.accessToken,
     refreshToken: res.data.refreshToken,
     expiresIn: res.data.expiresIn,
@@ -70,7 +72,7 @@ export async function logout(): Promise<void> {
   if (token) {
     await apiRequest("/auth/logout", {
       method: "POST",
-      body: JSON.stringify({ refreshToken: token }),
+      body: JSON.stringify({ refreshToken: token.refreshToken }),
     }).catch(() => {});
   }
   removeToken();

@@ -3,6 +3,7 @@ import { Bell, User, LogOut, Settings } from "lucide-react";
 import { ROUTES } from "@/lib/constants";
 import Breadcrumbs from "@/components/shared/Breadcrumbs";
 import { useAuthStore } from "@/stores/auth-store";
+import { useLogout } from "@/features/auth/hooks/use-auth";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,12 +14,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function Header() {
-  const logout = useAuthStore((s) => s.logout);
+  const logoutMutation = useLogout();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
-    navigate(ROUTES.LOGIN, { replace: true });
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        navigate(ROUTES.LOGIN, { replace: true });
+      },
+    });
   };
 
   return (
@@ -33,14 +37,17 @@ export default function Header() {
           <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[var(--vaykae-pink)]" />
         </button>
         <div className="border-l border-border pl-2">
-          <UserMenu onLogout={handleLogout} />
+          <UserMenu onLogout={handleLogout} isPending={logoutMutation.isPending} />
         </div>
       </div>
     </header>
   );
 }
 
-function UserMenu({ onLogout }: { onLogout: () => void }) {
+function UserMenu({
+  onLogout,
+  isPending,
+}: { onLogout: () => void; isPending: boolean }) {
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
   const displayName = user?.email ?? "Admin";
@@ -70,6 +77,7 @@ function UserMenu({ onLogout }: { onLogout: () => void }) {
         <DropdownMenuItem
           onClick={onLogout}
           className="text-destructive focus:text-destructive"
+          disabled={isPending}
         >
           <LogOut className="mr-2 h-4 w-4" />
           Log out

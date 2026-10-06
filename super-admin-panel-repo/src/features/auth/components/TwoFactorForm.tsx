@@ -34,6 +34,7 @@ export default function TwoFactorForm() {
         },
         {
           accessToken: res.data.accessToken,
+          refreshToken: res.data.refreshToken,
           expiresAt: Date.now() + expiresIn * 1000,
         },
       );

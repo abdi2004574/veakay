@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+﻿import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getCampaigns, flagCampaign, unflagCampaign } from "../api/campaigns";
 import {
   Table,
@@ -18,6 +18,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Flag, Eye } from "lucide-react";
 import type { AdminCampaign } from "../types";
+import { ErrorState } from "@/components/shared/DataState";
+import { friendlyErrorMessage } from "@/utils/error-message";
 
 export default function CampaignsTable() {
   const [search, setSearch] = useState("");
@@ -26,7 +28,7 @@ export default function CampaignsTable() {
   const qc = useQueryClient();
   const { toast } = useToast();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["campaigns", search],
     queryFn: () => getCampaigns({ search, limit: 20 }),
   });
@@ -123,6 +125,15 @@ export default function CampaignsTable() {
               <TableRow>
                 <TableCell colSpan={5} className="px-4 py-8">
                   <Skeleton className="h-4 w-full" />
+                </TableCell>
+              </TableRow>
+            ) : isError ? (
+              <TableRow>
+                <TableCell colSpan={5} className="px-4 py-8 text-center">
+                  <ErrorState
+                    message={friendlyErrorMessage(error)}
+                    onRetry={() => refetch()}
+                  />
                 </TableCell>
               </TableRow>
             ) : campaigns.length === 0 ? (

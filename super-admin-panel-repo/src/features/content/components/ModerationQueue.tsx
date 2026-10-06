@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+﻿import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getReports, resolveReport } from "../api/content";
 import {
   Table,
@@ -23,6 +23,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Check, X } from "lucide-react";
 import type { ContentReport } from "../types";
+import { ErrorState } from "@/components/shared/DataState";
+import { friendlyErrorMessage } from "@/utils/error-message";
 
 export default function ModerationQueue() {
   const [statusFilter, setStatusFilter] = useState<string>("pending");
@@ -34,14 +36,17 @@ export default function ModerationQueue() {
   const qc = useQueryClient();
   const { toast } = useToast();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["reports", statusFilter],
     queryFn: () =>
       getReports(
         statusFilter
           ? {
               status: statusFilter as
-                "pending" | "reviewed" | "actioned" | "dismissed",
+                | "pending"
+                | "reviewed"
+                | "actioned"
+                | "dismissed",
             }
           : undefined,
       ),
@@ -150,6 +155,15 @@ export default function ModerationQueue() {
                   className="px-4 py-8 text-center text-muted-foreground"
                 >
                   Loading...
+                </TableCell>
+              </TableRow>
+            ) : isError ? (
+              <TableRow>
+                <TableCell colSpan={6} className="px-4 py-8 text-center">
+                  <ErrorState
+                    message={friendlyErrorMessage(error)}
+                    onRetry={() => refetch()}
+                  />
                 </TableCell>
               </TableRow>
             ) : reports.length === 0 ? (

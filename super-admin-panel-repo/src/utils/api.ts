@@ -1,8 +1,13 @@
-import { type ApiResult, type ApiResponse } from "../types/api";
-import { getToken, isTokenExpired, removeToken } from "../lib/auth-client";
+﻿import { type ApiResult, type ApiResponse } from "../types/api";
+import { getToken, isTokenExpired, removeToken, getRefreshToken, setToken, setRefreshToken } from "../lib/auth-client";
+import { useAuthStore } from "../stores/auth-store";
 import { ROUTES } from "../lib/constants";
 
 const API_BASE = import.meta.env.VITE_API_URL || "/api/v1";
+const DEFAULT_TIMEOUT = 15000; // 15 seconds
+
+let isRefreshing = false;
+let refreshPromise: Promise<string | null> | null = null;
 
 class ApiError extends Error {
   constructor(
@@ -37,15 +42,84 @@ async function handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
   return body;
 }
 
+function generateIdempotencyKey(): string {
+  return crypto.randomUUID();
+}
+
+async function refreshAccessToken(): Promise<string | null> {
+  if (isRefreshing && refreshPromise) {
+    return refreshPromise;
+  }
+
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) {
+    return null;
+  }
+
+  isRefreshing = true;
+  refreshPromise = (async () => {
+    try {
+      const res = await fetch(API_BASE + "/auth/refresh", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (!res.ok) {
+        return null;
+      }
+
+      const data = await res.json();
+      const newAccessToken = data.data?.accessToken;
+      const newRefreshToken = data.data?.refreshToken;
+      const expiresIn = data.data?.expiresIn;
+
+      if (!newAccessToken || !expiresIn) {
+        return null;
+      }
+
+      const expiresAt = Date.now() + expiresIn * 1000;
+      const tokenPayload = {
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken || refreshToken,
+        expiresAt,
+      };
+
+      setToken(tokenPayload);
+      if (newRefreshToken) {
+        setRefreshToken(newRefreshToken);
+      }
+
+      useAuthStore.getState().setAuth(
+        useAuthStore.getState().user!,
+        tokenPayload,
+      );
+
+      return newAccessToken;
+    } catch {
+      return null;
+    } finally {
+      isRefreshing = false;
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+}
+
 export interface ApiRequestOptions extends RequestInit {
   skipAuth?: boolean;
+  _retry?: boolean;
+  timeout?: number;
 }
 
 export async function apiRequest<T>(
   endpoint: string,
   options: ApiRequestOptions = {},
 ): Promise<ApiResponse<T>> {
-  const { skipAuth = false, ...fetchOptions } = options;
+  const { skipAuth = false, _retry = false, timeout = DEFAULT_TIMEOUT, ...fetchOptions } = options;
   const token = getToken();
 
   if (!skipAuth && isTokenExpired(token)) {
@@ -54,7 +128,7 @@ export async function apiRequest<T>(
     throw new ApiError("UNAUTHORIZED", "Session expired", 401);
   }
 
-  const url = `${API_BASE}${endpoint}`;
+  const url = API_BASE + endpoint;
   const headers: HeadersInit = {
     "Content-Type": "application/json",
     ...(options.headers || {}),
@@ -62,31 +136,59 @@ export async function apiRequest<T>(
 
   if (token?.accessToken) {
     (headers as Record<string, string>)["Authorization"] =
-      `Bearer ${token.accessToken}`;
+      "Bearer " + token.accessToken;
   }
 
-  const response = await fetch(url, {
-    ...fetchOptions,
-    headers,
-  });
-
-  // Handle 401 by clearing auth
-  if (response.status === 401) {
-    removeToken();
-    window.location.href = ROUTES.LOGIN;
+  // Add Idempotency-Key for mutating requests
+  const method = (fetchOptions.method || "GET").toUpperCase();
+  if (["POST", "PATCH", "DELETE", "PUT"].includes(method)) {
+    (headers as Record<string, string>)["Idempotency-Key"] = generateIdempotencyKey();
   }
 
-  const result = await handleResponse<T>(response);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-  return result;
+  try {
+    const response = await fetch(url, {
+      ...fetchOptions,
+      headers,
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    // Handle 401 by attempting token refresh
+    if (response.status === 401 && !skipAuth && !_retry) {
+      const newAccessToken = await refreshAccessToken();
+      if (newAccessToken) {
+        // Retry the original request with new token
+        return apiRequest<T>(endpoint, { ...options, _retry: true });
+      } else {
+        // Refresh failed, logout and redirect
+        useAuthStore.getState().logout();
+        window.location.href = ROUTES.LOGIN;
+        throw new ApiError("UNAUTHORIZED", "Session expired", 401);
+      }
+    }
+
+    const result = await handleResponse<T>(response);
+
+    return result;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new ApiError("TIMEOUT", `Request timed out after ${timeout}ms`, 408);
+    }
+    throw error;
+  }
 }
 
 export async function getApi<T>(
   endpoint: string,
   params?: Record<string, string>,
 ): Promise<ApiResponse<T>> {
-  const query = params ? `?${new URLSearchParams(params).toString()}` : "";
-  return apiRequest<T>(`${endpoint}${query}`, { method: "GET" });
+  const query = params ? "?" + new URLSearchParams(params).toString() : "";
+  return apiRequest<T>(endpoint + query, { method: "GET" });
 }
 
 export async function postApi<T>(

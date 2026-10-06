@@ -53,3 +53,5 @@ test-results/
 .tmp/
 .temp/
 
+# Vite temp files
+*.timestamp-*.mjs

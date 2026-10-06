@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+﻿import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getUsers, updateUserStatus } from "../api/users";
 import {
   Table,
@@ -19,6 +19,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Ban, UserCheck } from "lucide-react";
 import type { AdminUser } from "../types";
+import { ErrorState } from "@/components/shared/DataState";
+import { friendlyErrorMessage } from "@/utils/error-message";
 
 export default function UsersTable() {
   const [search, setSearch] = useState("");
@@ -26,7 +28,7 @@ export default function UsersTable() {
   const qc = useQueryClient();
   const { toast } = useToast();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["users", search],
     queryFn: () => getUsers({ search, limit: 20 }),
   });
@@ -93,6 +95,15 @@ export default function UsersTable() {
               <TableRow>
                 <TableCell colSpan={6} className="px-4 py-8">
                   <Skeleton className="h-4 w-full" />
+                </TableCell>
+              </TableRow>
+            ) : isError ? (
+              <TableRow>
+                <TableCell colSpan={6} className="px-4 py-8 text-center">
+                  <ErrorState
+                    message={friendlyErrorMessage(error)}
+                    onRetry={() => refetch()}
+                  />
                 </TableCell>
               </TableRow>
             ) : users.length === 0 ? (

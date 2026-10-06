@@ -5,7 +5,11 @@ import {
   setToken,
   removeToken,
   isTokenExpired,
+  getRefreshToken,
+  setRefreshToken,
+  removeRefreshToken,
 } from "../lib/auth-client";
+import { apiRequest } from "../utils/api";
 import type { UserRole } from "../types/common";
 
 export interface User {
@@ -26,9 +30,9 @@ interface AuthState {
 
   setAuth: (
     user: User,
-    token: { accessToken: string; expiresAt: number },
+    token: { accessToken: string; refreshToken: string; expiresAt: number },
   ) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   hydrate: () => Promise<void>;
   clearError: () => void;
 }
@@ -39,11 +43,12 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       accessToken: null,
       isAuthenticated: false,
-      isLoading: true,
+      isLoading: false,
       error: null,
 
       setAuth: (user, token) => {
         setToken(token);
+        setRefreshToken(token.refreshToken);
         set({
           user,
           accessToken: token.accessToken,
@@ -53,8 +58,20 @@ export const useAuthStore = create<AuthState>()(
         });
       },
 
-      logout: () => {
+      logout: async () => {
+        const refreshToken = getRefreshToken();
+        if (refreshToken) {
+          try {
+            await apiRequest("/auth/logout", {
+              method: "POST",
+              body: JSON.stringify({ refreshToken }),
+            });
+          } catch {
+            // Ignore logout API errors
+          }
+        }
         removeToken();
+        removeRefreshToken();
         set({
           user: null,
           accessToken: null,
@@ -68,6 +85,7 @@ export const useAuthStore = create<AuthState>()(
         const token = getToken();
         if (!token || isTokenExpired(token)) {
           removeToken();
+          removeRefreshToken();
           set({
             isLoading: false,
             isAuthenticated: false,
@@ -91,7 +109,6 @@ export const useAuthStore = create<AuthState>()(
       name: "veakay_admin_auth",
       partialize: (state) => ({
         user: state.user,
-        accessToken: state.accessToken,
         isAuthenticated: state.isAuthenticated,
       }),
     },

@@ -38,6 +38,7 @@ export function useTwoFactor() {
         },
         {
           accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
           expiresAt: Date.now() + expiresIn * 1000,
         },
       );

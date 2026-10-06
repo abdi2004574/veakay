@@ -1,4 +1,4 @@
-ï»¿# Veakay Feature Tracker
+# Veakay Feature Tracker
 
 ## Context
 
@@ -22,7 +22,7 @@ Built by reading, in full: the TRD (688 lines), the section-by-section gap log (
 | 8 | Friends & Group Trips (remainder) | ? done |
 | 9 | Agency Dashboard & Business Tools | ? All sub-scopes built - Packages, Trip Requests, Dashboard KPIs/trends/charts, Revenue ledger/CSV export, Staff management, Invoices, Settings, Dynamic pricing, RevenueCat webhook (671 backend unit tests pass) |
 | 10 | Notifications (Traveler + Agency) | ? done |
-| 11 | Admin / Super Admin Panel | ? done â€” all 15 dashboard sections now wired to backend APIs (2026-09-13) |
+| 11 | Admin / Super Admin Panel | ? done — all 15 dashboard sections now wired to backend APIs (2026-09-13) |
 
 ---
 
@@ -738,7 +738,7 @@ Migration `20260904060000_wallet_ledger` applied to both dev and test databases.
 | `GET /admin/wallet/withdrawals/:id` - admin detail with user info | ? |
 | `PATCH /admin/wallet/withdrawals/:id/review` - approve / reject, Idempotency-Key required | ? |
 | `POST /admin/wallet/withdrawals/:id/mark-paid` - debit ledger + flip to `paid`, Idempotency-Key required; MVP-only ops path | ? |
-| Real processor integration (JazzCash / Easypaisa / bank gateway / Stripe Connect - TBD) | ? blocked on client funding-rail decision |
+| Real processor integration (Stripe Connect / RevenueCat) | ? blocked on client funding-rail decision |
 | Public `POST /campaigns/:id/donate` endpoint that calls the real processor | ? blocked on funding-rail decision |
 | `recordDonation` public HTTP endpoint | ? deliberately not built - internal service hook only, called by (TBD) processor webhook |
 | Commission split on booking_payment type | ? enum value reserved, no writer |
@@ -759,7 +759,7 @@ Migration `20260904060000_wallet_ledger` applied to both dev and test databases.
 
 **Backend - design decisions**
 
-- **`IFundingProvider` interface boundary** - `WalletService` never imports a concrete provider. The `FUNDING_PROVIDER` injection token plus `IFundingProvider` (`deposit(request) ? { ok, externalId?, message? }`) is the seam where JazzCash / Easypaisa / bank gateway / Stripe Connect lands. Today only `ManualFundingProvider` is registered; the service layer is untouched when the real provider is added.
+- **`IFundingProvider` interface boundary** - `WalletService` never imports a concrete provider. The `FUNDING_PROVIDER` injection token plus `IFundingProvider` (`deposit(request) ? { ok, externalId?, message? }`) is the seam where Stripe Connect / RevenueCat lands. Today only `ManualFundingProvider` is registered; the service layer is untouched when the real provider is added.
 - **`ManualFundingProvider` is admin-only** - its only exposure is the admin credit endpoint, used for ops reconciliation during the MVP. No public money movement. **RESOLVED 2026-09-12: `FUNDING_PROVIDER` is unconditionally bound to `ManualFundingProvider`**, so `POST /admin/wallet/wallets/:userId/credit` is the reachable production admin credit path (the earlier note that it returned 422 because of Stripe is stale and removed). The `IFundingProvider` seam is preserved for the future real funding rail.
 - **Idempotency via unique key** - every wallet-mutating endpoint requires `Idempotency-Key` (8-128 chars, validated by `IdempotencyKeyGuard`). The key is persisted on `WalletTransaction.idempotencyKey` (UNIQUE). On replay, `_writeTransaction` short-circuits and returns the existing transaction - no double-write. Same body and different body both replay the original (see the E2E test "same key + different body returns ORIGINAL, NOT 409" - actual behavior, documented).
 - **Debit-on-paid-not-on-approve rationale** - approving a withdrawal flips the status but does NOT debit the wallet. Debit happens on `mark-paid`, when the (TBD) processor signals a successful external transfer. This means a reversal between approve and paid cannot strand a negative balance. The MVP exposes `mark-paid` as an admin-only ops endpoint because there is no real processor yet; it is removed once the processor webhook replaces it.
@@ -821,7 +821,7 @@ A labeled, self-contained demo path for manual funding - NOT a real payment proc
 
 | Item | Reason |
 |---|---|
-| Real processor integration (JazzCash / Easypaisa / bank gateway / Stripe Connect) | Client decision pending; seam is `IFundingProvider` |
+| Real processor integration (Stripe Connect / RevenueCat) | Client decision pending; seam is `IFundingProvider` |
 | Public `POST /campaigns/:id/donate` calling the real processor | Built alongside the real provider |
 | Donation fee (#27) | Full amount credited today; zero fee deducted |
 | High-value withdrawal threshold (#3) | Column reserved; no service code reads it |
@@ -840,7 +840,7 @@ A labeled, self-contained demo path for manual funding - NOT a real payment proc
 
 **Explicitly deferred (per the task scope, do NOT build until the funding rail is confirmed)**
 
-- Real processor integration (JazzCash / Easypaisa / bank gateway / Stripe Connect - TBD) - client decision pending. The seam is `IFundingProvider`.
+- Real processor integration (Stripe Connect / RevenueCat) - client decision pending. The seam is `IFundingProvider`.
 - Commission splitting on booking-payment wallet type - enum value reserved in `WalletTransactionType`, no service method writes it.
 - Refund-after-withdrawal / clawback - TRD Open Question #4 stays open.
 - High-value threshold enforcement - TRD Open Question #3 stays open; the column is on the model for the future.
@@ -1179,7 +1179,7 @@ Built entirely as a new `src/modules/group-campaigns/` module depending on the a
 
 ---
 
-## 11. Admin / Super Admin Panel â€” ? backend wired to all 15 dashboard sections (2026-09-13)
+## 11. Admin / Super Admin Panel — ? backend wired to all 15 dashboard sections (2026-09-13)
 
 **Figma screens:** NONE - admin dashboard UI not yet built (dashboard-repo not started).
 
@@ -1221,8 +1221,8 @@ Built entirely as a new `src/modules/group-campaigns/` module depending on the a
 | PATCH /admin/users/:id - activate/deactivate user (super_admin) | ? (connected as of 2026-09-13) |
 | PATCH /admin/users/:id/kyc - verify/reject KYC (super_admin) | ? (connected as of 2026-09-13) |
 | GET /admin/users/top-performers - top travelers by completed trips (super_admin) | ? (connected as of 2026-09-13) |
-| GET /admin/settings - platform settings (super_admin) | ? (NEW â€” connected 2026-09-13) |
-| PATCH /admin/settings - update platform settings (super_admin) | ? (NEW â€” connected 2026-09-13) |
+| GET /admin/settings - platform settings (super_admin) | ? (NEW — connected 2026-09-13) |
+| PATCH /admin/settings - update platform settings (super_admin) | ? (NEW — connected 2026-09-13) |
 | GET /admin/agencies/pending - pending agencies (super_admin) | ? (connected as of 2026-09-13) |
 | POST /admin/agencies/:id/approve - approve agency (super_admin) | ? (connected as of 2026-09-13) |
 | POST /admin/agencies/:id/reject - reject agency (super_admin) | ? (connected as of 2026-09-13) |
@@ -1294,10 +1294,10 @@ All 15 Super Admin dashboard sections are now connected to the backend:
 | Top Performers | Covered by Users/Agencies | ? |
 
 **Changes made:**
-- Fixed fraud controller path: `@Controller('admin/fraud')` â†’ `@Controller('admin/fraud/flags')` to match dashboard hooks
-- Created Settings module: `SettingsController` (`GET/PATCH /admin/settings`), `SettingsService`, `SettingsModule` â€” wired into `AppModule`
+- Fixed fraud controller path: `@Controller('admin/fraud')` ? `@Controller('admin/fraud/flags')` to match dashboard hooks
+- Created Settings module: `SettingsController` (`GET/PATCH /admin/settings`), `SettingsService`, `SettingsModule` — wired into `AppModule`
 - All endpoints use existing guards (`RequirePlatformRole(PlatformRole.super_admin)`), `ResponseInterceptor`, and `AdminAuditLogService`
-- TypeScript build: âœ… passes cleanly
+- TypeScript build: ? passes cleanly
 
 ## Current Verification State (2026-09-16)
 
@@ -1306,9 +1306,9 @@ All 15 Super Admin dashboard sections are now connected to the backend:
 | Check | Result |
 |---|---|
 | TypeScript (`tsc --noEmit`) | PASS |
-| Agencies unit tests | PASS â€” 42 tests across 3 suites |
+| Agencies unit tests | PASS — 42 tests across 3 suites |
 | All other unit tests | PASS (last verified: 34 tests passing in focused run) |
-| E2E tests | BLOCKED â€” Docker Desktop/daemon not running; PostgreSQL, Redis, MailHog, MinIO unavailable |
+| E2E tests | BLOCKED — Docker Desktop/daemon not running; PostgreSQL, Redis, MailHog, MinIO unavailable |
 | Backend build | PASS |
 
 ### Frontend (`super-admin-panel-repo/`)
@@ -1316,7 +1316,7 @@ All 15 Super Admin dashboard sections are now connected to the backend:
 | Check | Result |
 |---|---|
 | TypeScript (`tsc --noEmit`) | PASS |
-| ESLint (`eslint . --ext .ts,.tsx`) | PASS â€” 0 errors, 0 warnings |
+| ESLint (`eslint . --ext .ts,.tsx`) | PASS — 0 errors, 0 warnings |
 | Vite build (`vite build`) | PASS |
 
 ### Mobile (`mobile-app-repo/`)
@@ -1325,11 +1325,12 @@ All 15 Super Admin dashboard sections are now connected to the backend:
 |---|---|
 | TypeScript (`tsc --noEmit`) | PASS |
 | ESLint | PASS (1 pre-existing warning: Unicode BOM in app/_layout.tsx, non-blocking) |
-| Jest | PASS â€” 3 suites, 46 tests |
+| Jest | PASS — 3 suites, 46 tests |
 | Expo web export | PASS |
-| Android native build | BLOCKED â€” Android SDK missing, JAVA_HOME not configured |
-| iOS native build | BLOCKED â€” Xcode unavailable on Windows |
+| Android native build | BLOCKED — Android SDK missing, JAVA_HOME not configured |
+| iOS native build | BLOCKED — Xcode unavailable on Windows |
 
 ### Known Latent Issues
 
 - `GET /admin/agencies/:id` is called by `super-admin-panel-repo/src/features/agencies/api/agencies.ts` (removed as of 2026-09-16) but the backend does not expose this endpoint. It was unused by the Agencies table and has been removed from the frontend. If a detail page is needed later, the backend must add a `@Get(':id')` route to `AdminAgenciesController`.
+

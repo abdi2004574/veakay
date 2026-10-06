@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+﻿import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAgencies, approveAgency, rejectAgency } from "../api/agencies";
 import {
   Table,
@@ -18,6 +18,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Check, X, Eye } from "lucide-react";
 import type { AdminAgency } from "../types";
+import { ErrorState } from "@/components/shared/DataState";
+import { friendlyErrorMessage } from "@/utils/error-message";
 
 export default function AgenciesTable() {
   const [search, setSearch] = useState("");
@@ -26,7 +28,7 @@ export default function AgenciesTable() {
   const qc = useQueryClient();
   const { toast } = useToast();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["agencies", search],
     queryFn: () => getAgencies({ search, limit: 20 }),
   });
@@ -126,6 +128,15 @@ export default function AgenciesTable() {
                   className="px-4 py-8 text-center text-muted-foreground"
                 >
                   Loading...
+                </TableCell>
+              </TableRow>
+            ) : isError ? (
+              <TableRow>
+                <TableCell colSpan={5} className="px-4 py-8 text-center">
+                  <ErrorState
+                    message={friendlyErrorMessage(error)}
+                    onRetry={() => refetch()}
+                  />
                 </TableCell>
               </TableRow>
             ) : agencies.length === 0 ? (
